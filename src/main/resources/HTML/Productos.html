@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th>
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${titulo}"></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+</head>
+<body>
+    <a class="btn btn-dark" href="/Login.html" role="button">Login</a>
+    <a class="btn btn-dark" href="/Carrito.html" role="button">Carrito de Compras</a>
+    <h2 class="text-center">Lista de Productos</h2>
+    <div class="table-responsive-lg">
+        <table class="table"; style="height: 100px;">
+            <thead class="thead-dark">
+            <tr>
+                <th class="align-middle"; scope="col">Nombre del Producto</th>
+                <th class="align-middle"; scope="col">Precio ($RD)</th>
+                <th class="align-middle"; scope="col">Cantidad</th>
+                <th class="align-middle"; scope="col">Acción</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="Producto : ${listaProducto}">
+                <td class="align-middle"; th:text="${Producto.nombre}"></td>
+                <td class="align-middle"; th:text="${Producto.precio}"></td>
+                <td class="align-middle";>2</td>
+                <td class="align-middle";>
+                    <button type="button" class="btn btn-light">Agregar al Carrito</button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

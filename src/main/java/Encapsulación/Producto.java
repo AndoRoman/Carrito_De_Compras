@@ -1,3 +1,5 @@
+package Encapsulación;
+
 import java.math.BigDecimal;
 
 public class Producto {

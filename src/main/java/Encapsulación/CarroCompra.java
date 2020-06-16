@@ -1,3 +1,5 @@
+package Encapsulación;
+
 import java.util.List;
 
 public class CarroCompra {
