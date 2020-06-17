@@ -29,31 +29,75 @@ public class ControladorPlantilla {
 
     public void Rutas(Javalin app) {
         app.routes(() -> {
+
+            //HOME
             path("/", () -> {
                 get("/", ctx -> {
                     List<Producto> listaProductos = getProductos();
-                    CarroCompra aux = new CarroCompra(0, null, 0);
+                    CarroCompra aux = servicio.getCarro();
                     Map<String, Object> modelo = new HashMap<>();
-                    modelo.put("titulo", "Productos");
+                    modelo.put("titulo", "Bienvenido");
                     modelo.put("listaProducto", listaProductos);
                     modelo.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
+                    try{
+                        if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
+                            modelo.put("admin", "Lista de Compras Realizadas");
+                            modelo.put("adminProduct", "Gestion de Productos");
+                        }
+                    }catch(Exception e){
+
+                    }
                     ctx.render("/HTML/Productos.html", modelo);
                 });
-            });
 
+
+                app.post("agregarProduct", ctx -> {
+
+                });
+            });
+            //VISTA DEL ADMINISTRADOR
             path("/ListCompras.html", ()-> {
                 get("/", ctx -> {
                     List<VentasProductos> listaVentas = getVentas();
-                    CarroCompra aux = new CarroCompra(0, null, 0);
+                    CarroCompra aux = servicio.getCarro();
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
                     view.put("ventasProductos", listaVentas);
-                    view.put("listaProductos", listaVentas.get(1).getListaProductos());
+                    view.put("listaProductos", listaVentas.get(0).getListaProductos());
+                    try{
+                        if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
+                            view.put("admin", "Lista de Compras Realizadas");
+                            view.put("adminProduct", "Gestion de Productos");
+                        }
+                    }catch(Exception e){
+
+                    }
                     ctx.render("/HTML/ListCompras.html", view);
+                });
+            });
+
+
+            //VISTA DE MODIFICACION DE PRODUCTOS
+            path("/Gestor.html", ()-> {
+                get("/", ctx -> {
+                    CarroCompra aux = servicio.getCarro();
+                    Map<String, Object> view = new HashMap<>();
+                    view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
+                    try{
+                        if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
+                            view.put("admin", "Lista de Compras Realizadas");
+                            view.put("adminProduct", "Gestion de Productos");
+                            view.put("listaProductos", servicio.getListProduct());
+                        }
+                    }catch(Exception e){
+
+                    }
+                    ctx.render("/HTML/Gestor.html", view);
                 });
             });
         });
     }
+
 
     private List<Producto> getProductos() {
         List<Producto> lista = new ArrayList<>();
@@ -67,7 +111,7 @@ public class ControladorPlantilla {
     private List<VentasProductos> getVentas(){
         List<VentasProductos> lista = new ArrayList<>();
         lista.add(new VentasProductos(000, Date.from(Instant.now()), servicio.getListaUsuarios().get(0).getNombre(), servicio.getListProduct(),2));
-        lista.add(new VentasProductos(001, Date.from(Instant.now()), servicio.getListaUsuarios().get(1).getNombre(), servicio.getListProduct(),4));
+        //lista.add(new VentasProductos(001, Date.from(Instant.now()), servicio.getListaUsuarios().get(1).getNombre(), servicio.getListProduct(),4));
         return lista;
     }
 }

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th>
+<head>
+    <meta charset="UTF-8">
+    <title>Productos</title>
+    <link rel="stylesheet" href="/CSS/Creatividad.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <a class="badge badge-dark" href="/" role="button">Inicio</a>
+    <a class="badge badge-dark" href="/Login.html" role="button">Login</a>
+    <a class="badge badge-dark" href="/Carrito.html" role="button" th:text="${item}"></a>
+    <a class="badge badge-dark" href="/ListCompras.html" role="button" th:text="${admin}"></a>
+    <a class="badge badge-dark" href="/Gestor.html" role="button" th:text="${adminProduct}"></a>
+</head>
+<body>
+    <h3 class="text-center">Gestión de Productos</h3>
+    <div class="container-sm">
+        <h4 class="text-left" id="my" >Agregar/Modificar Productos</h4>
+        <span class="m">
+            <form method="post" action="Gestor.html">
+                <div class="form-group">
+                    <label for="nom1">Nombre del Producto</label>
+                    <input type="text" class="form-control" id="nom1" name="NombreProducto">
+                </div>
+                <div class="form-group">
+                    <label for="nom2">Precio</label>
+                    <input type="text" id="nom2" name="precioProducto">
+                </div>
+                <div class="form-group">
+                    <label for="coment1">Comentario Acerca del Producto</label>
+                    <textarea class="form-control" id="coment1" rows="3"></textarea>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-primary" name="agregar">Agregar / Modificar</button>
+
+                </div>
+            </form>
+        </span>
+        <h4 class="text-left" id="my">Eliminar Productos</h4>
+        <span clas="m">
+            <form method="post" action="Gestor.html">
+                <div class="form-group">
+                    <label for="nom3">Nombre del Producto que desea Eliminar</label>
+                    <input type="text" class="form-control" id="nom3" name="NombreProductoEliminar">
+                </div>
+                <div class="form-group">
+                    <label for="coment2">Motivos por lo que desea eliminar el Producto</label>
+                    <textarea class="form-control" id="coment2" rows="3"></textarea>
+                </div>
+                <div>
+                    <button type="submit" class="btn btn-danger" name="eliminar">Eliminar</button>
+                </div>
+            </form>
+        </span>
+    </div>
+</body>
+</html>

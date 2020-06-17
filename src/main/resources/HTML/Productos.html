@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="${titulo}"></title>
+    <script type="text/javascript"></script>
     <link rel="icon" type="image/svg" href="/img/logo-markdown.svg" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 </head>
@@ -10,9 +11,12 @@
     <a class="badge badge-dark" href="/" role="button">Inicio</a>
     <a class="badge badge-dark" href="/Login.html" role="button">Login</a>
     <a class="badge badge-dark" href="/Carrito.html" role="button" th:text="${item}"></a>
+    <a class="badge badge-dark" href="/ListCompras.html" role="button" th:text="${admin}"></a>
+    <a class="badge badge-dark" href="/Gestor.html" role="button" th:text="${adminProduct}"></a>
     <h2 class="text-center">Lista de Productos</h2>
     <div class="container" >
-        <table class="table"; style="height: 100px;">
+        <table class="table"; style="height: 100px;" name="tabla" data-cookie="true">
+
             <thead class="thead-dark">
             <tr>
                 <th class="align-middle"; scope="col">Nombre del Producto</th>
@@ -21,24 +25,30 @@
                 <th class="align-middle"; scope="col">Acción</th>
             </tr>
             </thead>
-            <tbody>
+            <tbody name="cuerpo">
             <tr th:each="Producto : ${listaProducto}">
-                <td class="align-middle"; th:text="${Producto.nombre}"></td>
-                <td class="align-middle"; th:text="${Producto.precio}"></td>
-                <td class="align-middle";>
-                    Cantidad
-                    <select name="cant">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                    </select>
-                </td>
-                <td class="align-middle";>
-                    <button type="button" class="btn btn-light" action="agregarProduct">Agregar al Carrito</button>
-                </td>
+                <form name="ETER">
+                    <td class="align-middle"; th:text="${Producto.nombre}"></td>
+                    <td class="align-middle"; th:text="${Producto.precio}"></td>
+                    <td class="align-middle";>
+                        Cantidad
+                        <select input="text" name="cant">
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                            <option value="4">4</option>
+                            <option value="5">5</option>
+                            <option value="6">6</option>
+                        </select>
+                    </td>
+                    <td class="align-middle";>
+                        <input name="boton" type="button" class="btn btn-light" action="agregarProduct" value="Agregar al Carrito" onclick="contador()">
+                        <script> function contador() {
+                           cookieldTable.
+                           console.log(aux)
+                        }</script>
+                    </td>
+                </form>
             </tr>
             </tbody>
         </table>

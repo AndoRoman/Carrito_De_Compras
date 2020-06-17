@@ -22,27 +22,16 @@ public class ControladorSesion {
 
     public void control(Javalin app){
 
-        /*app.routes(() -> {
-            path("/ListCompras.html", () -> {
+        app.get("/", ctx -> {
+            Integer contador = ctx.sessionAttribute("contador");
+            if(contador==null){
+                contador = 0;
+            }
+            contador++;
+            ctx.sessionAttribute("contador", contador);
 
-
-                before(ctx -> {
-                    //recuperando el usuario de la sesión,en caso de no estar, redirecciona la pagina 401.
-                    Usuario usuario = ctx.sessionAttribute("usuario");
-                    if(usuario == null){// usuario no existe
-                        ctx.redirect("/Login.html");
-                    }
-                    //continuando con la consulta del endpoint solicitado.
-                });
-
-                //Respuesta del index.
-                get("/ListCompras", ctx ->{
-                    Usuario usuario = ctx.sessionAttribute("usuario");
-                    ctx.result("Zona Admin por la forma clasica --- Usuario: "+usuario.getUsuario());
-                } );
-            });
-        });*/
-        //TEST
+        });
+        //autenticación de sesión
         app.post("/login", ctx -> {
            String user = ctx.formParam("usuario");
            String pass = ctx.formParam("password");
@@ -54,6 +43,7 @@ public class ControladorSesion {
                    if (user.matches(users.get(i).getUsuario())) {
                        if (pass.matches(users.get(i).getPassword())) {
                            token = true;
+
                        }
                    }
                    i++;
@@ -63,9 +53,14 @@ public class ControladorSesion {
            }
 
            if(token){
+               //creando una cookie para dos minutos, el parametro indicando en segundos.
+               //ctx.cookie(ctx.pathParam("usuario"), ctx.pathParam("valor"), 120);
+               ctx.cookie("usuario", user, 120);
+               ctx.sessionAttribute("usuario", user);
                ctx.redirect("/ListCompras.html");
+
            }else {
-               ctx.html("NEGATIVO PA TI");
+               ctx.redirect("/401.html");
            }
         });
 

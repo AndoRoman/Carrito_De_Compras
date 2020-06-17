@@ -11,20 +11,17 @@ import static io.javalin.apibuilder.ApiBuilder.before;
 public class Main {
 
 
-    public Usuario admin = new Usuario("admin", "admin", "admin");
-
     public static void main(String[] args) {
         Javalin app = Javalin.create(config -> {
             config.addStaticFiles("/HTML");
+            config.addStaticFiles("/JS");
+            config.addStaticFiles("/CSS");
         }).start(7000);
 
         new ControladorPlantilla().Rutas(app);
         //Login
         new ControladorSesion().control(app);
 
-        app.post("agregarProduct", ctx -> {
-
-        });
     }
 
 }
