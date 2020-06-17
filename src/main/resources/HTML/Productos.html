@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <title th:text="${titulo}"></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-
 </head>
 <body>
-    <a class="btn btn-dark" href="/Login.html" role="button">Login</a>
-    <a class="btn btn-dark" href="/Carrito.html" role="button">Carrito de Compras</a>
+    <a class="badge badge-dark" href="/" role="button">Inicio</a>
+    <a class="badge badge-dark" href="/Login.html" role="button">Login</a>
+    <a class="badge badge-dark" href="/Carrito.html" role="button" th:text="${item}"></a>
     <h2 class="text-center">Lista de Productos</h2>
-    <div class="table-responsive-lg">
+    <div class="container" >
         <table class="table"; style="height: 100px;">
             <thead class="thead-dark">
             <tr>
@@ -24,9 +24,19 @@
             <tr th:each="Producto : ${listaProducto}">
                 <td class="align-middle"; th:text="${Producto.nombre}"></td>
                 <td class="align-middle"; th:text="${Producto.precio}"></td>
-                <td class="align-middle";>2</td>
                 <td class="align-middle";>
-                    <button type="button" class="btn btn-light">Agregar al Carrito</button>
+                    Cantidad
+                    <select name="cant">
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                    </select>
+                </td>
+                <td class="align-middle";>
+                    <button type="button" class="btn btn-light" action="agregarProduct">Agregar al Carrito</button>
                 </td>
             </tr>
             </tbody>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th>
+<head>
+    <meta charset="UTF-8">
+    <title>Inventario</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+</head>
+<body>
+    <a class="badge badge-dark" href="/" role="button">Inicio</a>
+    <a class="badge badge-dark" href="/Login.html" role="button">Login</a>
+    <a class="badge badge-dark" href="/Carrito.html" role="button" th:text="${item}"></a>
+    <h2 class="text-center">Productos Vendidos</h2>
+    <div class="container">
+        <table class="table table-bordered">
+            <thead class="thead-dark">
+            <tr th:each="Venta : ${ventasProductos}">
+                <th class="align-middle" scope="row" colspan="2"; th:text="${Venta.nombreCliente}">Manolo</th>
+                <th class="align-middle" scope="row" colspan="2"; th:text="${Venta.fechaCompra}">14/06/2020</th>
+            </tr>
+            </thead>
+            <tbody>
+            <th class="align-middle"; scope="col">Nombre del Producto</th>
+            <th class="align-middle"; scope="col">Precio ($RD)</th>
+            <th class="align-middle"; scope="col">Cantidad</th>
+            <th class="align-middle"; scope="col">Total ($RD)</th>
+            <tr th:each="Producto : Venta.listaProductos">
+                <td class="align-middle"; th:text="${Producto.producto}">TEST</td>
+                <td class="align-middle"; th:text="${Producto.precio}">1000</td>
+                <td class="align-middle"; th:text="${Producto.cantidad}">4</td>
+                <td class="align-middle"; th:number="${Producto.precio*Producto.cantidad}"></td>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+</html>
