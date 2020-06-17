@@ -33,7 +33,6 @@ public class ControladorPlantilla {
                 get("/", ctx -> {
                     List<Producto> listaProductos = getProductos();
                     CarroCompra aux = new CarroCompra(0, null, 0);
-
                     Map<String, Object> modelo = new HashMap<>();
                     modelo.put("titulo", "Productos");
                     modelo.put("listaProducto", listaProductos);
@@ -48,7 +47,8 @@ public class ControladorPlantilla {
                     CarroCompra aux = new CarroCompra(0, null, 0);
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
-                    view.put("ventaProductos", listaVentas);
+                    view.put("ventasProductos", listaVentas);
+                    view.put("listaProductos", listaVentas.get(1).getListaProductos());
                     ctx.render("/HTML/ListCompras.html", view);
                 });
             });
