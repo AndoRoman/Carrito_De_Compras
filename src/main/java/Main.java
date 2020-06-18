@@ -1,5 +1,6 @@
 import Encapsulación.Usuario;
 import Servicios.GestorProductos;
+import Visual.ControladorCarrito;
 import Visual.ControladorPlantilla;
 import Visual.ControladorSesion;
 import io.javalin.Javalin;
@@ -25,6 +26,8 @@ public class Main {
         new ControladorSesion().control(app);
         //Gestor
         new GestorProductos(app);
+        //Manejador del Carrito
+        new ControladorCarrito().ManejadorCarro(app);
 
     }
 

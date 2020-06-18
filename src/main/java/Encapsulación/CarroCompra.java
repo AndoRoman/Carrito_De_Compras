@@ -7,10 +7,15 @@ public class CarroCompra {
     private List<Producto> listaProductos;
     private int cantidad;
 
-    public CarroCompra(long id, List<Producto> listaProductos, int cantidad) {
+
+
+    private String user;
+
+    public CarroCompra(long id, List<Producto> listaProductos, int cantidad, String user) {
         this.id = id;
         this.listaProductos = listaProductos;
         this.cantidad = cantidad;
+        this.user = user;
     }
 
     public long getId() {
@@ -35,5 +40,13 @@ public class CarroCompra {
 
     public void setCantidad(int cantidad) {
         this.cantidad = cantidad;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
     }
 }

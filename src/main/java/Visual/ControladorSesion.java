@@ -9,7 +9,7 @@ import java.util.Map;
 
 
 
-public class ControladorSesion {
+public class  ControladorSesion {
 
     ColeccionGlobal servicio = ColeccionGlobal.getInstancia();
     List<Usuario> users = servicio.getListaUsuarios();

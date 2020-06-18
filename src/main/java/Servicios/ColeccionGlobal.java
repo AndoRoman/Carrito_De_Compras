@@ -16,8 +16,9 @@ public class ColeccionGlobal {
     private List<Producto> listProduct = new ArrayList<>();
     private List<Usuario> listaUsuarios = new ArrayList<>();
     private List<Producto> index = new ArrayList<>();
-    private CarroCompra carrito;
+    private List<CarroCompra> listCarros = new ArrayList<>();
     private int idProduct = 0;
+    private long idcart = 0;
 
 
 
@@ -25,8 +26,8 @@ public class ColeccionGlobal {
      * Constructor privado.
      */
     private ColeccionGlobal(){
-        index.add(new Producto(100, "nada",new BigDecimal("000")));
-        carrito = new CarroCompra(0, index , 0);
+        index.add(new Producto(100, "ticket",new BigDecimal("000")));
+        index.add(new Producto(200, "TEST",new BigDecimal("000")));
         //Anadiendo los usuarios.
         listaUsuarios.add(new Usuario("admin", "admin", "admin"));
         listaUsuarios.add(new Usuario("pepe", "pepe", "pepe"));
@@ -53,11 +54,31 @@ public class ColeccionGlobal {
     public List<Producto> getListProduct(){
         return listProduct;
     }
-    public CarroCompra getCarro() {
+    //REGRESA UN CARRITO DE COMPRA
+    public CarroCompra getCarro(String user) {
+        CarroCompra carrito = null;
+        for (CarroCompra cart: listCarros){
+            if(cart.getUser().matches(user)){
+                carrito = cart;
+                break;
+            }
+        }
+        if(carrito==null){
+            carrito = new CarroCompra(idcart,index, index.size(), user);
+            listCarros.add(carrito);
+        }
+        idcart++;
         return carrito;
     }
-    public void setCarro(Producto aux) {
-        carrito.getListaProductos().add(aux);
+    public void AgregarProductoCarro(String user, Producto aux) {
+        for (CarroCompra i: listCarros) {
+            if (i.getUser().matches(user)){
+                i.getListaProductos().add(aux);
+            }
+        }
+    }
+    public List<CarroCompra> getListCarros(){
+        return listCarros;
     }
 
     /*public enum MyRole implements Role {

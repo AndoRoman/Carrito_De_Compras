@@ -8,7 +8,6 @@ import io.javalin.plugin.rendering.JavalinRenderer;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static io.javalin.apibuilder.ApiBuilder.get;
@@ -33,12 +32,19 @@ public class ControladorPlantilla {
             //HOME
             path("/", () -> {
                 get("/", ctx -> {
+                    //Dando identidad al usuario
+                    if(ctx.sessionAttribute("usuario") == null){
+                        ctx.sessionAttribute("usuario",ctx.cookie("JSESSIONID"));
+
+                    }
                     List<Producto> listaProductos = getProductos();
-                    CarroCompra aux = servicio.getCarro();
+                    //Carrito especial para el usuario
+                    CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
+                    String cant = String.valueOf(aux.getCantidad());
                     Map<String, Object> modelo = new HashMap<>();
                     modelo.put("titulo", "Bienvenido");
                     modelo.put("listaProducto", listaProductos);
-                    modelo.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
+                    modelo.put("item", "Carrito de Compras(" + cant + ")");
                     try{
                         if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
                             modelo.put("admin", "Lista de Compras Realizadas");
@@ -58,8 +64,13 @@ public class ControladorPlantilla {
             //VISTA DEL ADMINISTRADOR
             path("/ListCompras.html", ()-> {
                 get("/", ctx -> {
+                    //Dando identidad al usuario
+                    if(ctx.sessionAttribute("usuario") == null){
+                        ctx.sessionAttribute("usuario",ctx.cookie("JSESSIONID"));
+
+                    }
                     List<VentasProductos> listaVentas = getVentas();
-                    CarroCompra aux = servicio.getCarro();
+                    CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
                     view.put("ventasProductos", listaVentas);
@@ -80,42 +91,49 @@ public class ControladorPlantilla {
             //VISTA DE MODIFICACION DE PRODUCTOS
             path("/HTML/Gestor.html", ()-> {
                 get("/", ctx -> {
-                    CarroCompra aux = servicio.getCarro();
+                    //Dando identidad al usuario
+                    if(ctx.sessionAttribute("usuario") == null){
+                        ctx.sessionAttribute("usuario",ctx.cookie("JSESSIONID"));
+
+                    }
+                    CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
-                    try{
-                        if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
-                            view.put("admin", "Lista de Compras Realizadas");
-                            view.put("adminProduct", "Gestion de Productos");
-                            view.put("listaProductos", servicio.getListProduct());
-                        }
-                    }catch(Exception e){
-
+                    if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
+                        view.put("admin", "Lista de Compras Realizadas");
+                        view.put("adminProduct", "Gestion de Productos");
+                        view.put("listaProductos", servicio.getListProduct());
                     }
                     ctx.render("/HTML/Gestor.html", view);
                 });
             });
-            /*
+
             //VISTA DE CARRITO
-            path("/ListCompras.html", ()-> {
+            path("/Carrito.html", ()-> {
                 get("/", ctx -> {
-                    List<VentasProductos> listaVentas = getVentas();
-                    CarroCompra aux = servicio.getCarro();
+                    //Dando identidad al usuario
+                    if(ctx.sessionAttribute("usuario") == null){
+                        ctx.sessionAttribute("usuario",ctx.cookie("JSESSIONID"));
+
+                    }
+                    CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
-                    view.put("ventasProductos", listaVentas);
-                    view.put("listaProductos", listaVentas.get(0).getListaProductos());
+                    view.put("listaProductos", aux.getListaProductos());
+                    view.put("total", "Total a Pagar: " + monto(aux.getListaProductos(), aux.getCantidad()) + "($RD)");
+                    view.put("monto", aux.getCantidad()*aux.getListaProductos().get(0).getPrecio().intValue());
                     try{
+                        view.put("user", "Carrito de: " +ctx.sessionAttribute("usuario"));
                         if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
                             view.put("admin", "Lista de Compras Realizadas");
                             view.put("adminProduct", "Gestion de Productos");
                         }
                     }catch(Exception e){
-
+                        view.put("user", "Tu Carrito de Compras");
                     }
-                    ctx.render("/HTML/ListCompras.html", view);
+                    ctx.render("/HTML/Carrito.html", view);
                 });
-            });*/
+            });
 
         });
     }
@@ -135,5 +153,13 @@ public class ControladorPlantilla {
         lista.add(new VentasProductos(000, Date.from(Instant.now()), servicio.getListaUsuarios().get(0).getNombre(), servicio.getListProduct(),2));
         //lista.add(new VentasProductos(001, Date.from(Instant.now()), servicio.getListaUsuarios().get(1).getNombre(), servicio.getListProduct(),4));
         return lista;
+    }
+
+    private double monto(List<Producto> P, int cant){
+        double total = 0;
+        for (Producto i: P){
+            total = total + i.getPrecio().floatValue()*cant;
+        }
+        return total;
     }
 }

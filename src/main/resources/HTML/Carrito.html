@@ -1,16 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
     <head>
         <meta charset="UTF-8">
         <title>Mi Carrito</title>
-        <link rel="stylesheet" type="text/css" href="/CSS/Creatividad.css">
-        <script type="text/javascript" href="/JS/js.js"></script>
+        <div th:fragment="javascript">
+            <!-- Optional JavaScript -->
+            <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+            <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+            <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+        </div>
         <link rel="icon" type="image/png" href="https://image.flaticon.com/icons/svg/891/891462.svg">
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 
         <a class="badge badge-dark" href="/" role="button">Inicio</a>
         <a class="badge badge-dark" href="/Login.html" role="button">Login</a>
-        <a class="badge badge-dark" href="/Carrito.html" role="button">Carrito de Compras</a>
+        <a class="badge badge-dark" href="/Carrito.html" role="button" th:text="${item}"></a>
         <a class="badge badge-dark" href="/ListCompras.html" role="button" th:text="${admin}"></a>
         <a class="badge badge-dark" href="/Gestor.html" role="button" th:text="${adminProduct}"></a>
 
@@ -18,9 +23,9 @@
 
     <body>
         <div class="container">
-            <h3 class="text-center" th:text="${user}">Carrito de Compras</h3>
+            <h3 class="text-center" th:text="${user}"></h3>
             <form>
-                <table class="table">
+                <table class="table" id="tabla">
                     <thead class="thead-dark">
                     <tr>
                         <th class="align-middle"; scope="col">Nombre del Producto</th>
@@ -31,11 +36,18 @@
                     </thead>
                     <tbody>
                     <tr th:each="Producto : ${listaProductos}">
-                        <td class="align-middle"; th:text="${Producto.nombre}">TEST</td>
-                        <td class="align-middle"; th:text="${Producto.precio}">1000</td>
+                        <form method="post" action="/sacar">
+                            <td class="align-middle"; th:text="${Producto.nombre}"></td>
+                            <td class="align-middle"; th:text="${Producto.precio}"></td>
+                            <td class="align-middle" name="monto"; th:text="${monto}"></td>
+                            <input type="hidden" name="nombre" th:text="${Producto.nombre}" required/>
+                            <td class="align-middle";>
+                                <input type="submit" class="btn btn-dark" value="Eliminar del Carrito">
+                            </td>
+                        </form>
                     </tr>
                     </tbody>
-                    <tfoot colspan="2" class="text-right"; th:text="${total}">TOTAL:</tfoot>
+                    <tfoot colspan="2"; th:text="${total}">TOTAL:</tfoot>
                 </table>
                 <button type="submit" class="btn btn-warning text-right">Procesar Comprar</button>
             </form>
