@@ -28,7 +28,7 @@ public class GestorProductos {
         });
 
         app.post("/delete", ctx -> {
-            String producto = ctx.formParam("NombreProducto");
+            String producto = ctx.formParam("NombreProductoEliminar");
             eliminar(producto);
             ctx.redirect("/");
         });
@@ -40,12 +40,13 @@ public class GestorProductos {
         servicio.getListProduct().add(aux);
     }
     public void eliminar(String producto){
+        int index = 0;
         for (Producto i : servicio.getListProduct()) {
             if(i.getNombre().matches(producto)){
-                servicio.getListProduct().remove(i);
+                index = servicio.getListProduct().indexOf(i);
             }
         }
-
+        servicio.getListProduct().remove(index);
     }
     public void modificarProducto(String producto, String precio){
         for (Producto i : servicio.getListProduct()) {
