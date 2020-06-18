@@ -3,15 +3,10 @@ package Visual;
 import Encapsulación.Usuario;
 import Servicios.ColeccionGlobal;
 import io.javalin.Javalin;
-import io.javalin.core.security.BasicAuthCredentials;
-import io.javalin.core.security.Role;
-import io.javalin.http.Context;
-
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Handler;
+
 
 
 public class ControladorSesion {
@@ -54,7 +49,6 @@ public class ControladorSesion {
 
            if(token){
                //creando una cookie para dos minutos, el parametro indicando en segundos.
-               //ctx.cookie(ctx.pathParam("usuario"), ctx.pathParam("valor"), 120);
                ctx.cookie("usuario", user, 120);
                ctx.sessionAttribute("usuario", user);
                ctx.redirect("/ListCompras.html");

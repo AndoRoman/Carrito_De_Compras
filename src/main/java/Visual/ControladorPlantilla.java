@@ -78,7 +78,7 @@ public class ControladorPlantilla {
 
 
             //VISTA DE MODIFICACION DE PRODUCTOS
-            path("/Gestor.html", ()-> {
+            path("/HTML/Gestor.html", ()-> {
                 get("/", ctx -> {
                     CarroCompra aux = servicio.getCarro();
                     Map<String, Object> view = new HashMap<>();
@@ -95,6 +95,28 @@ public class ControladorPlantilla {
                     ctx.render("/HTML/Gestor.html", view);
                 });
             });
+            /*
+            //VISTA DE CARRITO
+            path("/ListCompras.html", ()-> {
+                get("/", ctx -> {
+                    List<VentasProductos> listaVentas = getVentas();
+                    CarroCompra aux = servicio.getCarro();
+                    Map<String, Object> view = new HashMap<>();
+                    view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
+                    view.put("ventasProductos", listaVentas);
+                    view.put("listaProductos", listaVentas.get(0).getListaProductos());
+                    try{
+                        if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
+                            view.put("admin", "Lista de Compras Realizadas");
+                            view.put("adminProduct", "Gestion de Productos");
+                        }
+                    }catch(Exception e){
+
+                    }
+                    ctx.render("/HTML/ListCompras.html", view);
+                });
+            });*/
+
         });
     }
 

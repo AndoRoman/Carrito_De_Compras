@@ -1,4 +1,5 @@
 import Encapsulación.Usuario;
+import Servicios.GestorProductos;
 import Visual.ControladorPlantilla;
 import Visual.ControladorSesion;
 import io.javalin.Javalin;
@@ -16,11 +17,14 @@ public class Main {
             config.addStaticFiles("/HTML");
             config.addStaticFiles("/JS");
             config.addStaticFiles("/CSS");
+            config.addStaticFiles("/img");
         }).start(7000);
 
         new ControladorPlantilla().Rutas(app);
         //Login
         new ControladorSesion().control(app);
+        //Gestor
+        new GestorProductos(app);
 
     }
 

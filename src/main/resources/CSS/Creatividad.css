@@ -1,6 +1,11 @@
 
 #my {
-    color: black;
+    color: pink;
     style:bold;
     row-span: 100;
+}
+h3 {
+    color: black;
+    text-align: left;
+    font-style: italic;
 }

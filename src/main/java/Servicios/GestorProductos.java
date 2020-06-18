@@ -4,28 +4,33 @@ import Encapsulación.CarroCompra;
 import Encapsulación.Producto;
 import io.javalin.Javalin;
 import java.math.BigDecimal;
+import java.util.List;
 
 
 public class GestorProductos {
     ColeccionGlobal servicio = ColeccionGlobal.getInstancia();
 
-    private GestorProductos(Javalin app){
-        app.post("agregar", ctx -> {
+    public GestorProductos(Javalin app){
+        app.post("/HTML/Gestor.html", ctx -> {
             String producto = ctx.formParam("NombreProducto");
             String precio = ctx.formParam("precioProducto");
-
-            if(servicio.getListProduct().stream().spliterator().toString().matches(producto)){
-                modificarProducto(producto, precio);
-            }else{
+            boolean toke = false;
+            for (Producto aux: servicio.getListProduct()) {
+                if(aux.getNombre().matches(producto)) {
+                    modificarProducto(producto, precio);
+                    toke=true;
+                }
+            }
+            if(!toke){
                 agregarProduct(producto, precio);
             }
-            ctx.redirect("/HTTP/Productos.html", 200);
+            ctx.redirect("/");
         });
 
-        app.post("eliminar", ctx -> {
+        app.post("/delete", ctx -> {
             String producto = ctx.formParam("NombreProducto");
             eliminar(producto);
-            ctx.redirect("/HTTP/Productos.html", 200);
+            ctx.redirect("/");
         });
 
 
@@ -35,19 +40,17 @@ public class GestorProductos {
         servicio.getListProduct().add(aux);
     }
     public void eliminar(String producto){
-        for (int i = 0; i <servicio.getListProduct().size() ; i++) {
-            if (servicio.getListProduct().get(i).getNombre().matches(producto)){
+        for (Producto i : servicio.getListProduct()) {
+            if(i.getNombre().matches(producto)){
                 servicio.getListProduct().remove(i);
-                break;
             }
         }
 
     }
     public void modificarProducto(String producto, String precio){
-        for (int i = 0; i <servicio.getListProduct().size() ; i++) {
-            if (servicio.getListProduct().get(i).getNombre().matches(producto)){
-                servicio.getListProduct().get(i).setPrecio(new BigDecimal(precio));
-                break;
+        for (Producto i : servicio.getListProduct()) {
+            if(i.getNombre().matches(producto)){
+                i.setPrecio(new BigDecimal(precio));
             }
         }
     }

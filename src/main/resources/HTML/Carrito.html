@@ -1,13 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Tu Carrito</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-</head>
-<body>
-    <a class="badge badge-dark" href="/" role="button">Inicio</a>
-    <a class="badge badge-dark" href="/Login.html" role="button">Login</a>
-    <a class="badge badge-dark" href="/Carrito.html" role="button">Carrito de Compras</a>
-</body>
+<html lang="en" xmlns:th>
+    <head>
+        <meta charset="UTF-8">
+        <title>Mi Carrito</title>
+        <link rel="stylesheet" type="text/css" href="/CSS/Creatividad.css">
+        <script type="text/javascript" href="/JS/js.js"></script>
+        <link rel="icon" type="image/png" href="https://image.flaticon.com/icons/svg/891/891462.svg">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+
+        <a class="badge badge-dark" href="/" role="button">Inicio</a>
+        <a class="badge badge-dark" href="/Login.html" role="button">Login</a>
+        <a class="badge badge-dark" href="/Carrito.html" role="button">Carrito de Compras</a>
+        <a class="badge badge-dark" href="/ListCompras.html" role="button" th:text="${admin}"></a>
+        <a class="badge badge-dark" href="/Gestor.html" role="button" th:text="${adminProduct}"></a>
+
+    </head>
+
+    <body>
+        <div class="container">
+            <h3 class="text-center" th:text="${user}">Carrito de Compras</h3>
+            <form>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th class="align-middle"; scope="col">Nombre del Producto</th>
+                        <th class="align-middle"; scope="col">Precio ($RD)</th>
+                        <th class="align-middle"; scope="col">Monto ($RD)</th>
+                        <th class="align-middle"; scope="col"> Accion </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="Producto : ${listaProductos}">
+                        <td class="align-middle"; th:text="${Producto.nombre}">TEST</td>
+                        <td class="align-middle"; th:text="${Producto.precio}">1000</td>
+                    </tr>
+                    </tbody>
+                    <tfoot colspan="2" class="text-right"; th:text="${total}">TOTAL:</tfoot>
+                </table>
+                <button type="submit" class="btn btn-warning text-right">Procesar Comprar</button>
+            </form>
+
+        </div>
+    </body>
 </html>
