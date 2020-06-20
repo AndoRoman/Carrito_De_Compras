@@ -78,7 +78,6 @@ public class ControladorPlantilla {
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
                     view.put("ventasProductos", listaVentas);
-                    view.put("listaProductos", listaVentas.get(0).getListaProductos());
                     try{
                         if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
                             view.put("admin", "Lista de Compras Realizadas");

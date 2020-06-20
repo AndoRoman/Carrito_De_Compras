@@ -28,21 +28,28 @@ public class ControladorCarrito {
         return instancia;
     }
     private void SacarDelCarro(String nombreProducto, String usuario){
-            int index = 0;
+        int index = 0;
             //BUSCO EL CARRITO QUE LE PERTENECE A ESE USUARIO
-            for (CarroCompra i : servicio.getListCarros()) {
+        for (CarroCompra i : servicio.getListCarros()) {
                 if(i.getUser().matches(usuario)){
                     index = servicio.getListCarros().indexOf(i);
-                    servicio.getListCarros().get(index).getListaProductos().remove(nombreProducto);
                     break;
                 }
             }
+            //BUSCO EL PRODUCTO
+        for (Producto rechazado: servicio.getListCarros().get(index).getListaProductos()) {
+            if(rechazado.getNombre().matches(nombreProducto)){
+                servicio.getListCarros().get(index).getListaProductos().remove(rechazado);
+                break;
+            }
+        }
             /*servicio.getListCarros().stream().forEach(carroCompra -> {
                 if (carroCompra.getUser().matches(usuario)){
 
                 }
             });*/
-            //SACO EL PRODUCTO DEL CARRITO DEL USUARIO
+
+
     }
 
     public void AgregarAlCarro(String nombreProducto, String user){
