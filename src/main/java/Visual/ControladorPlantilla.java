@@ -27,6 +27,7 @@ public class ControladorPlantilla {
     }
 
     public void Rutas(Javalin app) {
+
         app.routes(() -> {
 
             //HOME
@@ -58,7 +59,10 @@ public class ControladorPlantilla {
 
 
                 app.post("agregarProduct", ctx -> {
-
+                    String NombreProducto = ctx.formParam("name");
+                    //INTANCIA
+                    new ControladorCarrito().AgregarAlCarro(NombreProducto, ctx.sessionAttribute("usuario"));
+                    ctx.result("El producto ha sido anadido al carrito");
                 });
             });
             //VISTA DEL ADMINISTRADOR

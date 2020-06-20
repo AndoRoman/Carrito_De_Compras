@@ -40,7 +40,7 @@
                             <td class="align-middle"; th:text="${Producto.nombre}"></td>
                             <td class="align-middle"; th:text="${Producto.precio}"></td>
                             <td class="align-middle" name="monto"; th:text="${monto}"></td>
-                            <input type="hidden" name="nombre" th:text="${Producto.nombre}" required/>
+                            <input type="hidden" name="nombre" th:value="${Producto.nombre}" required/>
                             <td class="align-middle";>
                                 <input type="submit" class="btn btn-dark" value="Eliminar del Carrito">
                             </td>

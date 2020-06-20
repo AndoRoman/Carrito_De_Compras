@@ -27,10 +27,16 @@ public class ControladorCarrito {
             for (CarroCompra i : servicio.getListCarros()) {
                 if(i.getUser().matches(usuario)){
                     index = servicio.getListCarros().indexOf(i);
+                    servicio.getListCarros().get(index).getListaProductos().remove(nombreProducto);
+                    break;
                 }
             }
+            /*servicio.getListCarros().stream().forEach(carroCompra -> {
+                if (carroCompra.getUser().matches(usuario)){
+
+                }
+            });*/
             //SACO EL PRODUCTO DEL CARRITO DEL USUARIO
-            servicio.getListCarros().get(index).getListaProductos().remove(nombreProducto);
     }
 
     public void AgregarAlCarro(String nombreProducto, String user){

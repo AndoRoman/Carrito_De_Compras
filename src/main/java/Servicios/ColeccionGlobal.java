@@ -70,13 +70,7 @@ public class ColeccionGlobal {
         idcart++;
         return carrito;
     }
-    public void AgregarProductoCarro(String user, Producto aux) {
-        for (CarroCompra i: listCarros) {
-            if (i.getUser().matches(user)){
-                i.getListaProductos().add(aux);
-            }
-        }
-    }
+
     public List<CarroCompra> getListCarros(){
         return listCarros;
     }
