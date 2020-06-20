@@ -48,8 +48,8 @@ public class  ControladorSesion {
            }
 
            if(token){
-               //creando una cookie para dos minutos, el parametro indicando en segundos.
-               ctx.cookie("usuario", user, 120);
+               //creando una cookie
+               ctx.cookie("usuario", user);
                ctx.sessionAttribute("usuario", user);
                ctx.redirect("/ListCompras.html");
 

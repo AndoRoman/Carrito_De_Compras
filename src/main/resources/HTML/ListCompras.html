@@ -15,11 +15,12 @@
     <a class="badge badge-dark" href="/Gestor.html" role="button" th:text="${adminProduct}"></a>
     <h2 class="text-center">Productos Vendidos</h2>
     <div class="container">
-        <table class="table table-bordered">
+        <table class="table table-bordered" th:each="tabla : ${ventasProductos}">
             <thead class="thead-dark">
-            <tr th:each="Venta : ${ventasProductos}">
-                <th class="align-middle" scope="row" colspan="2" th:text="${Venta.nombreCliente}">Manolo</th>
-                <th class="align-middle" scope="row" colspan="2" th:text="${Venta.fechaCompra}">14/06/2020</th>
+            <tr>
+                <th class="align-middle" scope="row" colspan="2" th:text="${tabla.nombreCliente}">Manolo</th>
+                <th class="align-middle" scope="row" colspan="2" th:text="${tabla.fechaCompra}">14/06/2020</th>
+
             </tr>
             </thead>
             <tbody>
@@ -28,11 +29,11 @@
             <th class="align-middle"; scope="col">Cantidad</th>
             <th class="align-middle"; scope="col">Total ($RD)</th>
 
-            <tr th:each="Producto : ${listaProductos}">
+            <tr th:each="Producto : ${tabla.listaProductos}">
                 <td class="align-middle"; th:text="${Producto.nombre}">TEST</td>
                 <td class="align-middle"; th:text="${Producto.precio}">1000</td>
-                <!--<td class="align-middle"; th:text="${ventasProductos.cantidad}">4</td>
-                <td class="align-middle"; th:number="${Producto.precio}${cantidad}"></td> -->
+                <td class="align-middle";>1</td>
+                <td class="align-middle"; th:text="${Producto.precio}"></td>
             </tr>
             </tbody>
         </table>

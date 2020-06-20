@@ -17,6 +17,7 @@ import static io.javalin.apibuilder.ApiBuilder.path;
 public class ControladorPlantilla {
 
     ColeccionGlobal servicio = ColeccionGlobal.getInstancia();
+    ControladorCarrito servicioCarrito = ControladorCarrito.getInstancia();
 
     public ControladorPlantilla() {
         registrarPlantilla();
@@ -35,11 +36,10 @@ public class ControladorPlantilla {
                 get("/", ctx -> {
                     //Dando identidad al usuario
                     if(ctx.sessionAttribute("usuario") == null){
-                        ctx.sessionAttribute("usuario",ctx.cookie("JSESSIONID"));
-
+                        ctx.cookie("usuario",ctx.cookie("JSESSIONID"));
+                        ctx.sessionAttribute("usuario" ,ctx.cookie("JSESSIONID"));
                     }
                     List<Producto> listaProductos = getProductos();
-                    //Carrito especial para el usuario
                     CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
                     String cant = String.valueOf(aux.getCantidad());
                     Map<String, Object> modelo = new HashMap<>();
@@ -60,8 +60,8 @@ public class ControladorPlantilla {
 
                 app.post("agregarProduct", ctx -> {
                     String NombreProducto = ctx.formParam("name");
-                    //INTANCIA
-                    new ControladorCarrito().AgregarAlCarro(NombreProducto, ctx.sessionAttribute("usuario"));
+                    //INSTANCIA
+                    servicioCarrito.AgregarAlCarro(NombreProducto, ctx.sessionAttribute("usuario"));
                     ctx.result("El producto ha sido anadido al carrito");
                 });
             });
@@ -73,7 +73,7 @@ public class ControladorPlantilla {
                         ctx.sessionAttribute("usuario",ctx.cookie("JSESSIONID"));
 
                     }
-                    List<VentasProductos> listaVentas = getVentas();
+                    List<VentasProductos> listaVentas = servicio.getListVentas();
                     CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
@@ -117,15 +117,14 @@ public class ControladorPlantilla {
                 get("/", ctx -> {
                     //Dando identidad al usuario
                     if(ctx.sessionAttribute("usuario") == null){
-                        ctx.sessionAttribute("usuario",ctx.cookie("JSESSIONID"));
-
+                        ctx.cookie("usuario",ctx.cookie("JSESSIONID"));
+                        ctx.sessionAttribute("usuario" ,ctx.cookie("JSESSIONID"));
                     }
                     CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
                     view.put("listaProductos", aux.getListaProductos());
-                    view.put("total", "Total a Pagar: " + monto(aux.getListaProductos(), aux.getCantidad()) + "($RD)");
-                    view.put("monto", aux.getCantidad()*aux.getListaProductos().get(0).getPrecio().intValue());
+                    view.put("total", "Total a Pagar: " + monto(aux.getListaProductos()) + "($RD)");
                     try{
                         view.put("user", "Carrito de: " +ctx.sessionAttribute("usuario"));
                         if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
@@ -145,24 +144,15 @@ public class ControladorPlantilla {
 
     private List<Producto> getProductos() {
         List<Producto> lista = new ArrayList<>();
-        lista.add(new Producto(000, "Lata de Maiz", new BigDecimal("50")));
-        lista.add(new Producto(001, "Lata de Salsa", new BigDecimal("75")));
-        lista.add(new Producto(002, "Espaguetis", new BigDecimal("30")));
+
         lista.addAll(servicio.getListProduct());
         return lista;
     }
 
-    private List<VentasProductos> getVentas(){
-        List<VentasProductos> lista = new ArrayList<>();
-        lista.add(new VentasProductos(000, Date.from(Instant.now()), servicio.getListaUsuarios().get(0).getNombre(), servicio.getListProduct(),2));
-        //lista.add(new VentasProductos(001, Date.from(Instant.now()), servicio.getListaUsuarios().get(1).getNombre(), servicio.getListProduct(),4));
-        return lista;
-    }
-
-    private double monto(List<Producto> P, int cant){
+    private double monto(List<Producto> P){
         double total = 0;
         for (Producto i: P){
-            total = total + i.getPrecio().floatValue()*cant;
+            total = total + i.getPrecio().floatValue();
         }
         return total;
     }

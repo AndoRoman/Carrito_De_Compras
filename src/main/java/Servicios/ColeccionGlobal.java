@@ -3,10 +3,13 @@ package Servicios;
 import Encapsulación.CarroCompra;
 import Encapsulación.Producto;
 import Encapsulación.Usuario;
+import Encapsulación.VentasProductos;
 import io.javalin.core.security.Role;
 
 import java.math.BigDecimal;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -15,8 +18,12 @@ public class ColeccionGlobal {
     private static ColeccionGlobal instancia;
     private List<Producto> listProduct = new ArrayList<>();
     private List<Usuario> listaUsuarios = new ArrayList<>();
-    private List<Producto> index = new ArrayList<>();
+    private List<Producto> indexes = new ArrayList<>();
     private List<CarroCompra> listCarros = new ArrayList<>();
+    private List<VentasProductos> listVentas = new ArrayList<>();
+
+
+
     private int idProduct = 0;
     private long idcart = 0;
 
@@ -26,18 +33,20 @@ public class ColeccionGlobal {
      * Constructor privado.
      */
     private ColeccionGlobal(){
-        index.add(new Producto(100, "ticket",new BigDecimal("000")));
-        index.add(new Producto(200, "TEST",new BigDecimal("000")));
+        //reñenando lista de productos por defecto en el carrito
+        indexes.add(new Producto(100, "ticket",new BigDecimal("000")));
+        indexes.add(new Producto(200, "Producto de Prueba",new BigDecimal("000")));
         //Anadiendo los usuarios.
         listaUsuarios.add(new Usuario("admin", "admin", "admin"));
         listaUsuarios.add(new Usuario("pepe", "pepe", "pepe"));
         listaUsuarios.add(new Usuario("user", "user", "user"));
         //Añadiendo Productos
-        listProduct.add(new Producto(003,"Pollo", new BigDecimal("250")));
-        listProduct.add(new Producto(004,"Filete", new BigDecimal("200")));
-        listProduct.add(new Producto(005,"Arroz", new BigDecimal("10")));
-        listProduct.add(new Producto(006,"Habichuelas", new BigDecimal("300")));
-        idProduct = 007;
+        listProduct.add(new Producto(listProduct.size(), "Lata de Maiz", new BigDecimal("50")));
+        listProduct.add(new Producto(listProduct.size(), "Lata de Salsa", new BigDecimal("75")));
+        listProduct.add(new Producto(listProduct.size(), "Espaguetis", new BigDecimal("30")));
+        //Venta por default
+        listVentas.add(new VentasProductos(000, Date.from(Instant.now()), "admin", indexes, 2));
+        listVentas.add(new VentasProductos(001, Date.from(Instant.now()), "user", indexes, 2));
     }
 
 
@@ -64,7 +73,7 @@ public class ColeccionGlobal {
             }
         }
         if(carrito==null){
-            carrito = new CarroCompra(idcart,index, index.size(), user);
+            carrito = new CarroCompra(idcart,indexes, indexes.size(), user);
             listCarros.add(carrito);
         }
         idcart++;
@@ -82,6 +91,14 @@ public class ColeccionGlobal {
     public int getIdProduct() {
         idProduct++;
         return idProduct - 1;
+    }
+
+    public List<VentasProductos> getListVentas() {
+        return listVentas;
+    }
+
+    public void setListVentas(List<VentasProductos> listVentas) {
+        this.listVentas = listVentas;
     }
 
 
