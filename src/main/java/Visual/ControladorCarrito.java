@@ -2,8 +2,15 @@ package Visual;
 
 import Encapsulación.CarroCompra;
 import Encapsulación.Producto;
+import Encapsulación.VentasProductos;
 import Servicios.ColeccionGlobal;
 import io.javalin.Javalin;
+
+import java.time.Instant;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ControladorCarrito {
     private static ControladorCarrito instancia;
@@ -17,9 +24,37 @@ public class ControladorCarrito {
             SacarDelCarro(product, usuario);
             ctx.redirect("/Carrito.html");
         });
+        app.get("/comprar", ctx -> {
+            String user = ctx.sessionAttribute("usuario");
+            System.out.println(user);
+            CrearCompra(user);
+            Map<String, Object> view = new HashMap<>();
+            VentasProductos aux = servicio.getListVentas().get(servicio.getListVentas().size() - 1);
+            view.put("listaProductos", aux.getListaProductos());
+            view.put("total", "Total Pagado: " + monto(aux.getListaProductos()) + "($RD)    " + "     Realizada el: " + Date.from(Instant.now()));
+            try{
+                view.put("user", "Carrito de: " +ctx.sessionAttribute("usuario"));
+                if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
+                    view.put("admin", "Lista de Compras Realizadas");
+                    view.put("adminProduct", "Gestion de Productos");
+                }
+            }catch(Exception e){
+                view.put("user", "Tu Carrito de Compras");
+            }
+            ctx.render("/HTML/CompraDONE.html", view);
+        });
 
 
     }
+
+    private double monto(List<Producto> P){
+        double total = 0;
+        for (Producto i: P){
+            total = total + i.getPrecio().floatValue();
+        }
+        return total;
+    }
+
 
     public static ControladorCarrito getInstancia(){
         if(instancia==null){
@@ -27,6 +62,19 @@ public class ControladorCarrito {
         }
         return instancia;
     }
+
+    private void CrearCompra(String user) {
+        CarroCompra i = null;
+        for (CarroCompra carroComprado: servicio.getListCarros()) {
+            if (carroComprado.getUser().matches(user)){
+                i = carroComprado;
+                servicio.getListCarros().remove(carroComprado);
+                break;
+            }
+        }
+        servicio.setVentas(new VentasProductos(servicio.getIdVentas(), Date.from(Instant.now()), i.getUser(), i.getListaProductos(), 1));
+    }
+
     private void SacarDelCarro(String nombreProducto, String usuario){
         int index = 0;
             //BUSCO EL CARRITO QUE LE PERTENECE A ESE USUARIO
@@ -43,13 +91,6 @@ public class ControladorCarrito {
                 break;
             }
         }
-            /*servicio.getListCarros().stream().forEach(carroCompra -> {
-                if (carroCompra.getUser().matches(usuario)){
-
-                }
-            });*/
-
-
     }
 
     public void AgregarAlCarro(String nombreProducto, String user){

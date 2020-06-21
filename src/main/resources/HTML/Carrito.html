@@ -23,8 +23,9 @@
 
     <body>
         <div class="container">
+            <div id="total"></div>
             <h3 class="text-center" th:text="${user}"></h3>
-            <form>
+            <form action="/comprar">
                 <table class="table" id="tabla">
                     <thead class="thead-dark">
                     <tr>
@@ -49,9 +50,22 @@
                     </tbody>
                     <tfoot colspan="2"; th:text="${total}">TOTAL:</tfoot>
                 </table>
-                <button type="submit" class="btn btn-warning text-right">Procesar Comprar</button>
+                <button type="submit" class="btn btn-warning text-right" id="BUY">Procesar Comprar</button>
             </form>
-
+            <div id="confirmacion"></div>
         </div>
     </body>
 </html>
+
+<script>
+    $(document).on('click', '#BUY', function () {
+        alert("¿Esta Seguro que desea Realizar su Compra?");
+        var aviso = document.getElementById("confirmacion");
+        aviso.innerHTML = "COMPRAR REALIZADA!";
+        aviso.classList.add("alert", "alert-success");
+        document.getElementById("BUY").style.visibility = "hidden"
+
+        $.post("/comprar")
+
+    })
+</script>

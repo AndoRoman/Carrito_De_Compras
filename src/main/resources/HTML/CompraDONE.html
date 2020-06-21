@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>COMPLETA</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
+    <a class="badge badge-dark" href="/" role="button">Inicio</a>
+    <a class="badge badge-dark" href="/Login.html" role="button">Login</a>
+    <a class="badge badge-dark" href="/ListCompras.html" role="button" th:text="${admin}"></a>
+    <a class="badge badge-dark" href="/Gestor.html" role="button" th:text="${adminProduct}"></a>
+</head>
+<body>
+    <div class="alert alert-success" >COMPRA REALIZADA SASTIFACTORIAMENTE!</div>
+    <div class="container">
+        <table class="table" id="tabla">
+            <thead class="thead-dark">
+            <tr>
+                <th class="align-middle"; scope="col">Nombre del Producto</th>
+                <th class="align-middle"; scope="col">Precio ($RD)</th>
+
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="Producto : ${listaProductos}">
+                <form method="post" action="/sacar">
+                    <td class="align-middle"; th:text="${Producto.nombre}"></td>
+                    <td class="align-middle"; th:text="${Producto.precio}"></td>
+                </form>
+            </tr>
+            </tbody>
+            <tfoot colspan="2"; th:text="${total}">TOTAL:</tfoot>
+        </table>
+        <img src="https://image.flaticon.com/icons/svg/891/891462.svg" class="text-center" width="400px" height="400px">
+    </div>
+</body>
+</html>

@@ -24,6 +24,8 @@ public class ColeccionGlobal {
 
 
 
+
+    private long idVentas = 2;
     private int idProduct = 0;
     private long idcart = 0;
 
@@ -97,9 +99,12 @@ public class ColeccionGlobal {
         return listVentas;
     }
 
-    public void setListVentas(List<VentasProductos> listVentas) {
-        this.listVentas = listVentas;
+    public void setVentas(VentasProductos Venta) {
+        listVentas.add(Venta);
     }
-
+    public long getIdVentas() {
+        idVentas++;
+        return idVentas;
+    }
 
 }
