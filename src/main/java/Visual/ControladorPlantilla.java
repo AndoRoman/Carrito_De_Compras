@@ -6,8 +6,6 @@ import Servicios.ColeccionGlobal;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.JavalinRenderer;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
-import java.math.BigDecimal;
-import java.time.Instant;
 import java.util.*;
 
 import static io.javalin.apibuilder.ApiBuilder.get;
@@ -124,7 +122,7 @@ public class ControladorPlantilla {
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
                     view.put("listaProductos", aux.getListaProductos());
                     view.put("total", "Total a Pagar: " + monto(aux.getListaProductos()) + "($RD)");
-                    try{
+                    try {
                         view.put("user", "Carrito de: " +ctx.sessionAttribute("usuario"));
                         if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
                             view.put("admin", "Lista de Compras Realizadas");

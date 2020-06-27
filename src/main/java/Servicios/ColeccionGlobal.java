@@ -16,6 +16,7 @@ import java.util.Set;
 public class ColeccionGlobal {
 
     private static ColeccionGlobal instancia;
+    private static BaseDatos BD;
     private List<Producto> listProduct = new ArrayList<>();
     private List<Usuario> listaUsuarios = new ArrayList<>();
     private List<Producto> indexes = new ArrayList<>();
@@ -35,6 +36,7 @@ public class ColeccionGlobal {
      * Constructor privado.
      */
     private ColeccionGlobal(){
+
         //reñenando lista de productos por defecto en el carrito
         indexes.add(new Producto(100, "ticket",new BigDecimal("000")));
         indexes.add(new Producto(200, "Producto de Prueba",new BigDecimal("000")));

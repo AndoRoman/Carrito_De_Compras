@@ -17,5 +17,10 @@ dependencies {
     compile 'io.javalin:javalin:3.9.0'
     compile "org.slf4j:slf4j-simple:1.8.0-beta4"
     compile 'org.thymeleaf:thymeleaf:3.0.5.RELEASE'
+    //H2
+    compile 'com.h2database:h2:1.4.191'
+    //SQL2O
+    // https://mvnrepository.com/artifact/org.sql2o/sql2o
+    compile group: 'org.sql2o', name: 'sql2o', version: '1.5.4'
 
 }
