@@ -45,10 +45,10 @@ public class ColeccionGlobal {
         listaUsuarios.add(new Usuario("pepe", "pepe", "pepe"));
         listaUsuarios.add(new Usuario("user", "user", "user"));
         //Añadiendo Productos
-        listProduct.add(new Producto(listProduct.size(), "Lata de Maiz", new BigDecimal("50")));
-        listProduct.add(new Producto(listProduct.size(), "Lata de Salsa", new BigDecimal("75")));
-        listProduct.add(new Producto(listProduct.size(), "Espaguetis", new BigDecimal("30")));
-        listProduct.add(new Producto(listProduct.size(), "ticket",new BigDecimal("000")));
+        listProduct.add(new Producto(listProduct.size() + 1, "Lata de Maiz", new BigDecimal("50")));
+        listProduct.add(new Producto(listProduct.size() + 1, "Lata de Salsa", new BigDecimal("75")));
+        listProduct.add(new Producto(listProduct.size()+ 1, "Espaguetis", new BigDecimal("30")));
+        listProduct.add(new Producto(listProduct.size() + 1, "ticket",new BigDecimal("000")));
         //Venta por default
         listVentas.add(new VentasProductos(1, Date.from(Instant.now()), "admin", listProduct, 2));
     }

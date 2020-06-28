@@ -36,7 +36,7 @@ public class GestorProductos {
 
     }
     public void agregarProduct(String producto, String precio){
-        Producto aux = new Producto(servicio.getIdProduct(), producto, new BigDecimal(precio));
+        Producto aux = new Producto(servicio.getListProduct().size() + 1, producto, new BigDecimal(precio));
         servicio.getListProduct().add(aux);
     }
     public void eliminar(String producto){

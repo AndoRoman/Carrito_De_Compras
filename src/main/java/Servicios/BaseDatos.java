@@ -90,10 +90,10 @@ public class BaseDatos {
                 "FOREIGN KEY (nombreCliente) REFERENCES Usuarios(usuario),\n"+
                 ");";
         String CreateVentas_Productos = "CREATE TABLE IF NOT EXISTS Ventas_ListProductos\n" +
-                "(id_Ventas INT NOT NULL IDENTITY(1, 1),\n" +
+                "(id_Ventas INT NOT NULL,\n" +
                 "id_Producto INT NOT NULL,\n"+
-                "FOREIGN KEY (id_Ventas) REFERENCES VentasProductos(id),"+
-                "FOREIGN KEY (id_Producto) REFERENCES Productos(id)" +
+               // "FOREIGN KEY (id_Ventas) REFERENCES VentasProductos(id),"+
+               // "FOREIGN KEY (id_Producto) REFERENCES Productos(id)" +
                 ");";
 
         //ESTABLECIENDO EN BASE DE DATOS
@@ -162,26 +162,45 @@ public class BaseDatos {
             String sql2 = "INSERT INTO VentasProductos(fechaCompra, nombreCliente, cantidad) values(?,?,?)";
 
             int fila3 = 0;
-            PreparedStatement prepareStatement3 = con.prepareStatement(sql2);
+
             for ( VentasProductos i: servicio.getListVentas()) {
                 int index = servicio.getListVentas().indexOf(i);
+                PreparedStatement prepareStatement3 = con.prepareStatement(sql2);
                 prepareStatement3.setString(1, servicio.getListVentas().get(index).getFechaCompra().toString());
                 prepareStatement3.setString(2, servicio.getListVentas().get(index).getNombreCliente());
                 prepareStatement3.setInt(3, servicio.getListVentas().get(index).getCantidad());
+                fila3 += prepareStatement3.executeUpdate();
+                prepareStatement3.close();
                 //lista de productos
                 for (Producto p: servicio.getListVentas().get(index).getListaProductos()) {
                     String list = "INSERT INTO Ventas_ListProductos(id_Ventas, id_Producto) values(?,?)";
                     PreparedStatement prepareStatement4 = con.prepareStatement(list);
-                    prepareStatement4.setInt(1, (int)i.getId()); //AQUI ESTA EL PROBLEMA DE LA CLAVE FORANEA!!
+                    prepareStatement4.setInt(1, (int)i.getId());
                     prepareStatement4.setInt(2, p.getId());
                     prepareStatement4.executeUpdate();
+                    prepareStatement4.close();
                 }
-                fila3 += prepareStatement3.executeUpdate();
+
+
             }
 
             if(fila3>0){
                 System.out.println("Ventas Por Defecto Agregadas!");
             }
+
+            //ESTABLECIENDO RELACION FORANEA EN TABLA Ventas_ListProductos
+            String alter = "ALTER TABLE Ventas_ListProductos\n " +
+                    "ADD FOREIGN KEY (id_Ventas) REFERENCES VentasProductos(id);";
+                    //"ADD FOREIGN KEY (id_Producto) REFERENCES Productos(id);";
+            PreparedStatement prepareStatement5 = con.prepareStatement(alter);
+            prepareStatement5.executeUpdate();
+            prepareStatement5.close();
+
+            String alter2 = "ALTER TABLE Ventas_ListProductos\n " +
+            "ADD FOREIGN KEY (id_Producto) REFERENCES Productos(id);";
+            PreparedStatement prepareStatement6 = con.prepareStatement(alter2);
+            prepareStatement6.executeUpdate();
+            prepareStatement6.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
