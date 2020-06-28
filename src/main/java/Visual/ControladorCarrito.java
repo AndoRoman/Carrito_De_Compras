@@ -3,14 +3,20 @@ package Visual;
 import Encapsulación.CarroCompra;
 import Encapsulación.Producto;
 import Encapsulación.VentasProductos;
+import Servicios.BaseDatos;
 import Servicios.ColeccionGlobal;
 import io.javalin.Javalin;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class ControladorCarrito {
     private static ControladorCarrito instancia;
@@ -27,7 +33,6 @@ public class ControladorCarrito {
         app.get("/comprar", ctx -> {
             String user = ctx.sessionAttribute("usuario");
             System.out.println(user);
-            CrearCompra(user);
             Map<String, Object> view = new HashMap<>();
             VentasProductos aux = servicio.getListVentas().get(servicio.getListVentas().size() - 1);
             view.put("listaProductos", aux.getListaProductos());
@@ -41,7 +46,14 @@ public class ControladorCarrito {
             }catch(Exception e){
                 view.put("user", "Tu Carrito de Compras");
             }
-            ctx.render("/HTML/CompraDONE.html", view);
+
+            if (user.matches("admin")) {
+                System.out.println("Compra de " + user + " Facturada: " + CrearCompra(user));
+                ctx.render("/HTML/CompraDONE.html", view);
+            }
+            else{
+                ctx.redirect("/Login.html");
+            }
         });
 
 
@@ -63,7 +75,7 @@ public class ControladorCarrito {
         return instancia;
     }
 
-    private void CrearCompra(String user) {
+    private boolean CrearCompra(String user) {
         CarroCompra i = null;
         for (CarroCompra carroComprado: servicio.getListCarros()) {
             if (carroComprado.getUser().matches(user)){
@@ -72,7 +84,37 @@ public class ControladorCarrito {
                 break;
             }
         }
-        servicio.setVentas(new VentasProductos(servicio.getIdVentas(), Date.from(Instant.now()), i.getUser(), i.getListaProductos(), 1));
+        VentasProductos aux = new VentasProductos(servicio.getListVentas().size() + 1, Date.from(Instant.now()), i.getUser(), i.getListaProductos(), 1);
+        servicio.setVentas(aux);
+
+        //CREANDO VENTA EN LA BASE DE DATOS!!!
+        boolean ok =false;
+
+        Connection con = null;
+        try {
+
+            String query = "INSERT INTO VentasProductos(fechaCompra, nombreCliente, cantidad) values(?,?,?)";
+            con = BaseDatos.getInstancia().Conexion();
+            //
+            PreparedStatement prepareStatement = con.prepareStatement(query);
+            prepareStatement.setString(1, aux.getFechaCompra().toString());
+            prepareStatement.setString(2, aux.getNombreCliente());
+            prepareStatement.setInt(3, aux.getCantidad());
+            //
+            int fila = prepareStatement.executeUpdate();
+            ok = fila > 0 ;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(ControladorCarrito.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(ControladorCarrito.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return ok;
     }
 
     private void SacarDelCarro(String nombreProducto, String usuario){

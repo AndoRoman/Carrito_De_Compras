@@ -27,7 +27,7 @@ public class GestorProductos {
                 }
             }
             if(!toke){
-                agregarProduct(producto, precio);
+                System.out.println("El Producto: " + producto + " Ha sido Agregado: " + agregarProduct(producto, precio));
             }
             ctx.redirect("/");
         });
@@ -40,12 +40,38 @@ public class GestorProductos {
 
 
     }
-    public void agregarProduct(String producto, String precio){
+    public boolean agregarProduct(String producto, String precio){
         Producto aux = new Producto(servicio.getListProduct().size() + 1, producto, new BigDecimal(precio));
         servicio.getListProduct().add(aux);
 
+        //Agregando a la BASE DE DATOS
+        boolean ok =false;
 
+        Connection con = null;
+        try {
 
+            String query = "INSERT INTO Productos(nombre, precio) values(?,?)";
+            con = BaseDatos.getInstancia().Conexion();
+            //
+            PreparedStatement prepareStatement = con.prepareStatement(query);
+            //Antes de ejecutar seteo los parametros.
+            prepareStatement.setString(1, aux.getNombre());
+            prepareStatement.setString(2, aux.getPrecio().toString());
+            //
+            int fila = prepareStatement.executeUpdate();
+            ok = fila > 0 ;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(GestorProductos.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(GestorProductos.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return ok;
 
 
     }

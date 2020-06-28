@@ -79,8 +79,6 @@ public class BaseDatos {
                 "precio DECIMAL(10) NOT NULL,\n" +
                 ");";
 
-       //String CreateProductos = "INSERT_PORDEFECTO INTO Productos (nombre, precio) VALUES (TICKET, 0)";
-
 
         String CreateVentas = "CREATE TABLE IF NOT EXISTS VentasProductos\n" +
                 "(id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,\n" +
