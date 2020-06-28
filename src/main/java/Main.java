@@ -21,8 +21,6 @@ public class Main {
         }).start(7000);
         //PRIMERO se enciende la base de datos
         BaseDatos.getInstancia().arrancarBD();
-        //Prueba de conexión
-        BaseDatos.getInstancia().PararBD();
         //Plantillas iniciales
         new ControladorPlantilla().Rutas(app);
         //Login
