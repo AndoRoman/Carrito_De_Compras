@@ -1,4 +1,3 @@
-import Encapsulación.Usuario;
 import Servicios.BaseDatos;
 import Servicios.GestorProductos;
 import Visual.ControladorCarrito;
@@ -25,9 +24,9 @@ public class Main {
         //Creando Tablas
         BaseDatos.getInstancia().TABLESBD();
         //Insertando
-        //System.out.println("Nuevo Usuario? :" + BaseDatos.getInstancia().INSERT());
+        System.out.println("Usuario Admin Agregado? :" + BaseDatos.getInstancia().INSERT_PORDEFECTO());
         //STOP
-        BaseDatos.getInstancia().PararBD();
+        //BaseDatos.getInstancia().PararBD();
         //Plantillas iniciales
         new ControladorPlantilla().Rutas(app);
         //Login
