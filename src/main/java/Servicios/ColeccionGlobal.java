@@ -48,6 +48,7 @@ public class ColeccionGlobal {
         listProduct.add(new Producto(listProduct.size() + 1, "Lata de Maiz", new BigDecimal("50")));
         listProduct.add(new Producto(listProduct.size() + 1, "Lata de Salsa", new BigDecimal("75")));
         listProduct.add(new Producto(listProduct.size()+ 1, "Espaguetis", new BigDecimal("30")));
+        listProduct.add(new Producto(listProduct.size()+ 1, "Pollo", new BigDecimal("38")));
         listProduct.add(new Producto(listProduct.size() + 1, "ticket",new BigDecimal("000")));
         //Venta por default
         listVentas.add(new VentasProductos(1, Date.from(Instant.now()), "admin", listProduct, 2));

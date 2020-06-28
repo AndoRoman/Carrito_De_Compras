@@ -196,11 +196,11 @@ public class BaseDatos {
             prepareStatement5.executeUpdate();
             prepareStatement5.close();
 
-            String alter2 = "ALTER TABLE Ventas_ListProductos\n " +
+            /*String alter2 = "ALTER TABLE Ventas_ListProductos\n " +
             "ADD FOREIGN KEY (id_Producto) REFERENCES Productos(id);";
             PreparedStatement prepareStatement6 = con.prepareStatement(alter2);
             prepareStatement6.executeUpdate();
-            prepareStatement6.close();
+            prepareStatement6.close();*/
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
@@ -214,6 +214,7 @@ public class BaseDatos {
         }
         return ok;
     }
+
 
 
 

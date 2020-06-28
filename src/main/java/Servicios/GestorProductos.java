@@ -4,7 +4,12 @@ import Encapsulación.CarroCompra;
 import Encapsulación.Producto;
 import io.javalin.Javalin;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class GestorProductos {
@@ -17,7 +22,7 @@ public class GestorProductos {
             boolean toke = false;
             for (Producto aux: servicio.getListProduct()) {
                 if(aux.getNombre().matches(producto)) {
-                    modificarProducto(producto, precio);
+                    System.out.println("El Producto: " + producto + " Ha sido Modificado: " + modificarProducto(producto, precio));
                     toke=true;
                 }
             }
@@ -29,7 +34,7 @@ public class GestorProductos {
 
         app.post("/delete", ctx -> {
             String producto = ctx.formParam("NombreProductoEliminar");
-            eliminar(producto);
+            System.out.println("Producto: "+ producto + " Ha sido Eliminado: "+eliminar(producto));
             ctx.redirect("/");
         });
 
@@ -38,21 +43,84 @@ public class GestorProductos {
     public void agregarProduct(String producto, String precio){
         Producto aux = new Producto(servicio.getListProduct().size() + 1, producto, new BigDecimal(precio));
         servicio.getListProduct().add(aux);
+
+
+
+
+
     }
-    public void eliminar(String producto){
+    public boolean eliminar(String producto){
         int index = 0;
         for (Producto i : servicio.getListProduct()) {
-            if(i.getNombre().matches(producto)){
+            if (i.getNombre().matches(producto)) {
                 index = servicio.getListProduct().indexOf(i);
             }
         }
+        boolean ok =false;
+
+        //ELIMINANDOLO DE FORMA PERSISTENTE
+        Connection con = null;
+        try {
+
+            String query = "DELETE FROM Productos where id = ?";
+            con = BaseDatos.getInstancia().Conexion();
+            //
+            PreparedStatement prepareStatement = con.prepareStatement(query);
+
+            //Indica el where...
+            prepareStatement.setInt(1, index);
+            //
+            int fila = prepareStatement.executeUpdate();
+            ok = fila > 0 ;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(GestorProductos.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(GestorProductos.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
         servicio.getListProduct().remove(index);
+        return ok;
     }
-    public void modificarProducto(String producto, String precio){
+    public boolean modificarProducto(String producto, String precio){
+        int index = 0;
         for (Producto i : servicio.getListProduct()) {
             if(i.getNombre().matches(producto)){
                 i.setPrecio(new BigDecimal(precio));
+                index = servicio.getListProduct().indexOf(i);
             }
         }
+
+        //MODIFICANDOLO DE FORMA PERSISTENTE
+        boolean ok =false;
+
+        Connection con = null;
+        try {
+
+            String query = "UPDATE Productos set precio = ? where id = ?";
+            con = BaseDatos.getInstancia().Conexion();
+            //
+            PreparedStatement prepareStatement = con.prepareStatement(query);
+            prepareStatement.setString(1, precio);
+            //Indica el where...
+            prepareStatement.setInt(2, index);
+            //
+            int fila = prepareStatement.executeUpdate();
+            ok = fila > 0 ;
+
+        } catch (SQLException ex) {
+            Logger.getLogger(GestorProductos.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(GestorProductos.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return ok;
     }
 }
