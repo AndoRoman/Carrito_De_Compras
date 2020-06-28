@@ -5,14 +5,13 @@ import Visual.ControladorCarrito;
 import Visual.ControladorPlantilla;
 import Visual.ControladorSesion;
 import io.javalin.Javalin;
-import org.sql2o.Sql2o;
 
 import java.sql.SQLException;
 
 
 public class Main {
 
-    public static void main(String[] args) throws SQLException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException {
         Javalin app = Javalin.create(config -> {
             config.addStaticFiles("/HTML");
             config.addStaticFiles("/JS");
@@ -21,6 +20,14 @@ public class Main {
         }).start(7000);
         //PRIMERO se enciende la base de datos
         BaseDatos.getInstancia().arrancarBD();
+        //Prueba
+        BaseDatos.getInstancia().PRUEBA();
+        //Creando Tablas
+        BaseDatos.getInstancia().TABLESBD();
+        //Insertando
+        //System.out.println("Nuevo Usuario? :" + BaseDatos.getInstancia().INSERT());
+        //STOP
+        BaseDatos.getInstancia().PararBD();
         //Plantillas iniciales
         new ControladorPlantilla().Rutas(app);
         //Login
