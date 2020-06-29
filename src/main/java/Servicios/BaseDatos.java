@@ -2,9 +2,15 @@ package Servicios;
 import Encapsulación.Producto;
 import Encapsulación.VentasProductos;
 import org.h2.tools.Server;
+import org.jetbrains.annotations.NotNull;
 import org.sql2o.Sql2o;
 
+import java.math.BigDecimal;
 import java.sql.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -118,18 +124,26 @@ public class BaseDatos {
         Connection con = null;
         boolean ok = false;
         try {
-            //USUARIO ADMIN
-            String query = "INSERT INTO Usuarios (usuario, nombre, password) values(?,?,?)";
+            //COMPROBACION SI ADMIN EXISTE
+            String look = "SELECT* FROM Usuarios";
             con = Conexion();
             //
-            PreparedStatement prepareStatement = con.prepareStatement(query);
-            //Antes de ejecutar seteo los parametros.
-            prepareStatement.setString(1, "admin");
-            prepareStatement.setString(2, "admin");
-            prepareStatement.setString(3, "admin");
-            int fila = prepareStatement.executeUpdate();
+            PreparedStatement security = con.prepareStatement(look);
+            ResultSet toke = security.executeQuery();
 
-            ok = fila > 0 ;
+            if(toke.toString() == "") {
+                //USUARIO ADMIN
+                String query = "INSERT INTO Usuarios (usuario, nombre, password) values(?,?,?)";
+                //
+                PreparedStatement prepareStatement = con.prepareStatement(query);
+                //Antes de ejecutar seteo los parametros.
+                prepareStatement.setString(1, "admin");
+                prepareStatement.setString(2, "admin");
+                prepareStatement.setString(3, "admin");
+                int fila = prepareStatement.executeUpdate();
+
+                ok = fila > 0;
+            }
 
         } catch (SQLException ex) {
             Logger.getLogger(BaseDatos.class.getName()).log(Level.SEVERE, null, ex);
@@ -164,7 +178,7 @@ public class BaseDatos {
             for ( VentasProductos i: servicio.getListVentas()) {
                 int index = servicio.getListVentas().indexOf(i);
                 PreparedStatement prepareStatement3 = con.prepareStatement(sql2);
-                prepareStatement3.setString(1, servicio.getListVentas().get(index).getFechaCompra().toString());
+                prepareStatement3.setString(1, servicio.getListVentas().get(index).getFechaCompra());
                 prepareStatement3.setString(2, servicio.getListVentas().get(index).getNombreCliente());
                 prepareStatement3.setInt(3, servicio.getListVentas().get(index).getCantidad());
                 fila3 += prepareStatement3.executeUpdate();
@@ -211,6 +225,77 @@ public class BaseDatos {
             }
         }
         return ok;
+    }
+
+
+    //LA QUE SE ENCARGA DE RECONSTRUIR LA Lista de VENTAS
+    public ArrayList<VentasProductos> getVentaBD(){
+        ArrayList<VentasProductos> lista = new ArrayList<VentasProductos>();
+        ArrayList<Producto> LAlistaProducto = new ArrayList<Producto>();
+        Connection con = null;
+        try {
+            String query = "SELECT* FROM VentasProductos";
+            con = BaseDatos.getInstancia().Conexion();
+            //
+            PreparedStatement prepareStatement = con.prepareStatement(query);
+            ResultSet retorno = prepareStatement.executeQuery();
+
+            while(retorno.next()){
+                VentasProductos aux = new VentasProductos();
+                aux.setId(retorno.getInt("id"));
+                aux.setNombreCliente(retorno.getString("nombreCliente"));
+                aux.setCantidad(retorno.getInt("cantidad"));
+                aux.setFechaCompra(retorno.getString("fechaCompra"));
+
+                //LISTA DE PRODUCTO [SACANDO ID DE PRODUCTOS DE LA TABLA Ventas_ListProductos]
+                String sql = "SELECT id_Producto FROM Ventas_ListProductos WHERE id_Ventas=?";
+                PreparedStatement preparedStatement2 = con.prepareStatement(sql);
+                preparedStatement2.setInt(1, (int) aux.getId());
+                ResultSet indicesproduct = preparedStatement2.executeQuery();
+                int index;
+                ArrayList<Integer> indices = new ArrayList<Integer>();
+                while (indicesproduct.next()){
+                    index = indicesproduct.getInt("id_Producto");
+                    if(index != 0){
+                        indices.add(index);
+                    }
+                }
+                preparedStatement2.close();
+
+                //BUSCANDO Productos correspondientes en la BD
+                String query2 = "SELECT * FROM Productos";
+                PreparedStatement preparedStatement3 = con.prepareStatement(query2);
+                ResultSet lista_Productos = preparedStatement3.executeQuery();
+
+                while (lista_Productos.next()){
+                    for (int j = 0; j < indices.size(); j++) {
+                        if(indices.get(j).equals(lista_Productos.getInt("id"))){
+                            Producto p = new Producto(lista_Productos.getInt("id"), lista_Productos.getString("nombre"), new BigDecimal(lista_Productos.getString("precio")));
+                            LAlistaProducto.add(p);
+                        }
+                    }
+                }
+
+                preparedStatement3.close();
+                aux.setListaProductos(LAlistaProducto);
+                lista.add(aux);
+                //LIMPIEZA
+                indices.clear();
+                LAlistaProducto.clear();
+            }
+            prepareStatement.close();
+
+        } catch (SQLException ex) {
+            Logger.getLogger(BaseDatos.class.getName()).log(Level.SEVERE, null, ex);
+        } finally{
+            try {
+                con.close();
+            } catch (SQLException ex) {
+                Logger.getLogger(BaseDatos.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        return lista;
     }
 
 

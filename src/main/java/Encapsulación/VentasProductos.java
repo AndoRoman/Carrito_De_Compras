@@ -1,24 +1,13 @@
 package Encapsulación;
 
-import org.intellij.lang.annotations.Identifier;
-
-import java.util.Date;
 import java.util.List;
 
 public class VentasProductos {
     private long id;
-    private Date fechaCompra;
+    private String fechaCompra;
     private String nombreCliente;
     private List<Producto> listaProductos;
     private int cantidad;
-
-    public VentasProductos(long id, Date fechaCompra, String nombreCliente, List<Producto> listaProductos, int cantidad) {
-        this.id = id;
-        this.fechaCompra = fechaCompra;
-        this.nombreCliente = nombreCliente;
-        this.listaProductos = listaProductos;
-        this.cantidad = cantidad;
-    }
 
     public long getId() {
         return id;
@@ -28,11 +17,11 @@ public class VentasProductos {
         this.id = id;
     }
 
-    public Date getFechaCompra() {
+    public String getFechaCompra() {
         return fechaCompra;
     }
 
-    public void setFechaCompra(Date fechaCompra) {
+    public void setFechaCompra(String fechaCompra) {
         this.fechaCompra = fechaCompra;
     }
 

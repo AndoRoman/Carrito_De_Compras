@@ -2,6 +2,7 @@ package Visual;
 import Encapsulación.CarroCompra;
 import Encapsulación.Producto;
 import Encapsulación.VentasProductos;
+import Servicios.BaseDatos;
 import Servicios.ColeccionGlobal;
 import io.javalin.Javalin;
 import io.javalin.plugin.rendering.JavalinRenderer;
@@ -71,7 +72,9 @@ public class ControladorPlantilla {
                         ctx.sessionAttribute("usuario",ctx.cookie("JSESSIONID"));
 
                     }
-                    List<VentasProductos> listaVentas = servicio.getListVentas();
+                    //TOMANDO LISTA DE LA BASE DE DATOS
+                    List<VentasProductos> listaVentas = BaseDatos.getInstancia().getVentaBD();
+                    ///
                     CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");

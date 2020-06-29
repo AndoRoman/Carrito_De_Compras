@@ -84,7 +84,14 @@ public class ControladorCarrito {
                 break;
             }
         }
-        VentasProductos aux = new VentasProductos(servicio.getListVentas().size() + 1, Date.from(Instant.now()), i.getUser(), i.getListaProductos(), 1);
+        //CREANDO NUEVA VENTA
+        VentasProductos aux = new VentasProductos();
+        aux.setId(servicio.getListVentas().size() + 1);
+        aux.setFechaCompra(Date.from(Instant.now()).toString());
+        aux.setNombreCliente(i.getUser());
+        aux.setListaProductos(i.getListaProductos());
+        aux.setCantidad(1);
+
         servicio.setVentas(aux);
 
         //CREANDO VENTA EN LA BASE DE DATOS!!!
@@ -97,7 +104,7 @@ public class ControladorCarrito {
             con = BaseDatos.getInstancia().Conexion();
             //
             PreparedStatement prepareStatement = con.prepareStatement(query);
-            prepareStatement.setString(1, aux.getFechaCompra().toString());
+            prepareStatement.setString(1, aux.getFechaCompra());
             prepareStatement.setString(2, aux.getNombreCliente());
             prepareStatement.setInt(3, aux.getCantidad());
             //
