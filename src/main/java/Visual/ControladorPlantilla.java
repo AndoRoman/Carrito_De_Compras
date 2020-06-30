@@ -72,13 +72,13 @@ public class ControladorPlantilla {
                         ctx.sessionAttribute("usuario",ctx.cookie("JSESSIONID"));
 
                     }
-                    //TOMANDO LISTA DE LA BASE DE DATOS
-                    List<VentasProductos> listaVentas = BaseDatos.getInstancia().getVentaBD();
+                    //TOMANDO LISTA DE VENTAS DE LA BASE DE DATOS
+                    servicio.setListVentas(BaseDatos.getInstancia().getVentaBD());
                     ///
                     CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
                     Map<String, Object> view = new HashMap<>();
                     view.put("item", "Carrito de Compras(" + aux.getCantidad() + ")");
-                    view.put("ventasProductos", listaVentas);
+                    view.put("ventasProductos", BaseDatos.getInstancia().getVentaBD());
                     try{
                         if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
                             view.put("admin", "Lista de Compras Realizadas");

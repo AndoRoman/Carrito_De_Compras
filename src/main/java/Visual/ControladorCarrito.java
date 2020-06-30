@@ -30,25 +30,33 @@ public class ControladorCarrito {
             SacarDelCarro(product, usuario);
             ctx.redirect("/Carrito.html");
         });
+
+        //BOTON COMPRAR!
         app.get("/comprar", ctx -> {
             String user = ctx.sessionAttribute("usuario");
             System.out.println(user);
             Map<String, Object> view = new HashMap<>();
-            VentasProductos aux = servicio.getListVentas().get(servicio.getListVentas().size() - 1);
-            view.put("listaProductos", aux.getListaProductos());
-            view.put("total", "Total Pagado: " + monto(aux.getListaProductos()) + "($RD)    " + "     Realizada el: " + Date.from(Instant.now()));
-            try{
-                view.put("user", "Carrito de: " +ctx.sessionAttribute("usuario"));
-                if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
-                    view.put("admin", "Lista de Compras Realizadas");
-                    view.put("adminProduct", "Gestion de Productos");
-                }
-            }catch(Exception e){
-                view.put("user", "Tu Carrito de Compras");
-            }
 
+            //Auntenticando Usuario
             if (user.matches("admin")) {
-                System.out.println("Compra de " + user + " Facturada: " + CrearCompra(user));
+
+
+                System.out.println("Compra de " + user + " Facturada: " + CrearCompra(user)); //<--CREANDO COMPRA EN BD
+
+                int Index = servicio.getListVentas().size() - 1; //<-- indices de ultima venta
+                VentasProductos aux = servicio.getListVentas().get(Index);//BaseDatos.getInstancia().getVentaBD().get(Index); //Tomando venta de la BD
+                System.out.println("VENTA FACTURADA: " + aux.getListaProductos().toString());
+                view.put("listaProductos", aux.getListaProductos());
+                view.put("total", "Total Pagado: " + monto(aux.getListaProductos()) + "($RD)    " + "     Realizada el: " + Date.from(Instant.now()));
+                try{
+                    view.put("user", "Carrito de: " +ctx.sessionAttribute("usuario"));
+                    if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
+                        view.put("admin", "Lista de Compras Realizadas");
+                        view.put("adminProduct", "Gestion de Productos");
+                    }
+                }catch(Exception e){
+                    view.put("user", "Tu Carrito de Compras");
+                }
                 ctx.render("/HTML/CompraDONE.html", view);
             }
             else{
@@ -99,17 +107,28 @@ public class ControladorCarrito {
 
         Connection con = null;
         try {
-
-            String query = "INSERT INTO VentasProductos(fechaCompra, nombreCliente, cantidad) values(?,?,?)";
+            //VENTA
+            String query = "INSERT INTO VentasProductos(id, fechaCompra, nombreCliente, cantidad) values(?,?,?,?)";
             con = BaseDatos.getInstancia().Conexion();
             //
             PreparedStatement prepareStatement = con.prepareStatement(query);
-            prepareStatement.setString(1, aux.getFechaCompra());
-            prepareStatement.setString(2, aux.getNombreCliente());
-            prepareStatement.setInt(3, aux.getCantidad());
+            prepareStatement.setInt(1, (int)aux.getId());
+            prepareStatement.setString(2, aux.getFechaCompra());
+            prepareStatement.setString(3, aux.getNombreCliente());
+            prepareStatement.setInt(4, aux.getCantidad());
             //
             int fila = prepareStatement.executeUpdate();
             ok = fila > 0 ;
+            //Productos de la Venta
+            System.out.println("Venta Id: " + aux.getId());
+            for (Producto p: aux.getListaProductos()) {
+                String list = "INSERT INTO Ventas_ListProductos(id_Ventas, id_Producto) values(?,?)";
+                PreparedStatement prepareStatement4 = con.prepareStatement(list);
+                prepareStatement4.setInt(1, (int)aux.getId());
+                prepareStatement4.setInt(2, p.getId());
+                System.out.println("Insertando Producto: "+p.getId() + " " + p.getNombre() + ": " + prepareStatement4.executeUpdate());
+                prepareStatement4.close();
+            }
 
         } catch (SQLException ex) {
             Logger.getLogger(ControladorCarrito.class.getName()).log(Level.SEVERE, null, ex);

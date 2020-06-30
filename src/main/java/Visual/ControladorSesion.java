@@ -18,8 +18,6 @@ import java.util.logging.Logger;
 
 public class  ControladorSesion {
 
-    ColeccionGlobal servicio = ColeccionGlobal.getInstancia();
-    List<Usuario> users = servicio.getListaUsuarios();
 
     public void control(Javalin app){
 

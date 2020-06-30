@@ -1,5 +1,6 @@
 package Servicios;
 import Encapsulación.Producto;
+import Encapsulación.Usuario;
 import Encapsulación.VentasProductos;
 import org.h2.tools.Server;
 import org.jetbrains.annotations.NotNull;
@@ -21,6 +22,7 @@ public class BaseDatos {
     ColeccionGlobal servicio = ColeccionGlobal.getInstancia();
     private Sql2o sql2o;
     private Statement statement;
+    private Usuario TEST = null;
 
     private BaseDatos(){
         try {
@@ -80,14 +82,14 @@ public class BaseDatos {
 
 
         String CreateTABLAProductos = "CREATE TABLE IF NOT EXISTS Productos\n" +
-                "(id INT NOT NULL IDENTITY(1,1) PRIMARY KEY,\n" +
+                "(id INT NOT NULL PRIMARY KEY,\n" +
                 "nombre VARCHAR(30) NOT NULL,\n" +
                 "precio DECIMAL(10) NOT NULL,\n" +
                 ");";
 
 
         String CreateVentas = "CREATE TABLE IF NOT EXISTS VentasProductos\n" +
-                "(id INT NOT NULL IDENTITY(1, 1) PRIMARY KEY,\n" +
+                "(id INT NOT NULL PRIMARY KEY,\n" +
                 "fechaCompra VARCHAR(30) NOT NULL,\n"+
                 "nombreCliente VARCHAR(20) NOT NULL,\n" +
                 "cantidad INT NOT NULL,\n" +
@@ -99,6 +101,7 @@ public class BaseDatos {
                // "FOREIGN KEY (id_Ventas) REFERENCES VentasProductos(id),"+
                // "FOREIGN KEY (id_Producto) REFERENCES Productos(id)" +
                 ");";
+
 
         //ESTABLECIENDO EN BASE DE DATOS
 
@@ -120,7 +123,7 @@ public class BaseDatos {
         conn.close();
     }
 
-    public boolean INSERT_PORDEFECTO() {
+    public boolean INSERT_PORDEFECTO() throws SQLException {
         Connection con = null;
         boolean ok = false;
         try {
@@ -131,8 +134,13 @@ public class BaseDatos {
             PreparedStatement security = con.prepareStatement(look);
             ResultSet toke = security.executeQuery();
 
-            if(toke.toString() == "") {
-                //USUARIO ADMIN
+            while (toke.next()){
+                TEST = new Usuario(toke.getString("usuario"), toke.getString("nombre"), toke.getString("password"));
+            }
+            if(TEST == null) {
+
+                //INSERTANDO USUARIO ADMIN
+                System.out.println("CREANDO ADMIN...");
                 String query = "INSERT INTO Usuarios (usuario, nombre, password) values(?,?,?)";
                 //
                 PreparedStatement prepareStatement = con.prepareStatement(query);
@@ -148,82 +156,22 @@ public class BaseDatos {
         } catch (SQLException ex) {
             Logger.getLogger(BaseDatos.class.getName()).log(Level.SEVERE, null, ex);
         }
-
-
+        /*
+        //ESTABLECIENDO RELACION FORANEA EN TABLA Ventas_ListProductos
+        String alter = "ALTER TABLE Ventas_ListProductos\n " +
+                "ADD FOREIGN KEY (id_Ventas) REFERENCES VentasProductos(id);";
+        //"ADD FOREIGN KEY (id_Producto) REFERENCES Productos(id);";
+        PreparedStatement prepareStatement5 = con.prepareStatement(alter);
+        prepareStatement5.executeUpdate();
+        prepareStatement5.close();
+        */
+       //CERRANDO
         try {
-            //PRODUCTOS POR DEFECTO
-            String sql = "INSERT INTO Productos (nombre, precio) values(?,?)";
-            int fila2 = 0;
-            PreparedStatement prepareStatement2 = con.prepareStatement(sql);
-            for (Producto i: servicio.getListProduct()) {
-                int index = servicio.getListProduct().indexOf(i);
-                prepareStatement2.setString(1, servicio.getListProduct().get(index).getNombre());
-                prepareStatement2.setString(2, servicio.getListProduct().get(index).getPrecio().toString());
-                fila2 += prepareStatement2.executeUpdate();
-            }
-
-            if(fila2>0){
-                System.out.println("Productos Por Defectos Agregados!");
-            }
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+            con.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(BaseDatos.class.getName()).log(Level.SEVERE, null, ex);
         }
 
-        try {
-            //VENTAS POR DEFECTO
-            String sql2 = "INSERT INTO VentasProductos(fechaCompra, nombreCliente, cantidad) values(?,?,?)";
-
-            int fila3 = 0;
-
-            for ( VentasProductos i: servicio.getListVentas()) {
-                int index = servicio.getListVentas().indexOf(i);
-                PreparedStatement prepareStatement3 = con.prepareStatement(sql2);
-                prepareStatement3.setString(1, servicio.getListVentas().get(index).getFechaCompra());
-                prepareStatement3.setString(2, servicio.getListVentas().get(index).getNombreCliente());
-                prepareStatement3.setInt(3, servicio.getListVentas().get(index).getCantidad());
-                fila3 += prepareStatement3.executeUpdate();
-                prepareStatement3.close();
-                //lista de productos
-                for (Producto p: servicio.getListVentas().get(index).getListaProductos()) {
-                    String list = "INSERT INTO Ventas_ListProductos(id_Ventas, id_Producto) values(?,?)";
-                    PreparedStatement prepareStatement4 = con.prepareStatement(list);
-                    prepareStatement4.setInt(1, (int)i.getId());
-                    prepareStatement4.setInt(2, p.getId());
-                    prepareStatement4.executeUpdate();
-                    prepareStatement4.close();
-                }
-
-
-            }
-
-            if(fila3>0){
-                System.out.println("Ventas Por Defecto Agregadas!");
-            }
-
-            //ESTABLECIENDO RELACION FORANEA EN TABLA Ventas_ListProductos
-            String alter = "ALTER TABLE Ventas_ListProductos\n " +
-                    "ADD FOREIGN KEY (id_Ventas) REFERENCES VentasProductos(id);";
-                    //"ADD FOREIGN KEY (id_Producto) REFERENCES Productos(id);";
-            PreparedStatement prepareStatement5 = con.prepareStatement(alter);
-            prepareStatement5.executeUpdate();
-            prepareStatement5.close();
-
-            /*String alter2 = "ALTER TABLE Ventas_ListProductos\n " +
-            "ADD FOREIGN KEY (id_Producto) REFERENCES Productos(id);";
-            PreparedStatement prepareStatement6 = con.prepareStatement(alter2);
-            prepareStatement6.executeUpdate();
-            prepareStatement6.close();*/
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-        }
-
-        finally{
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                Logger.getLogger(BaseDatos.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
         return ok;
     }
 
@@ -240,6 +188,7 @@ public class BaseDatos {
             PreparedStatement prepareStatement = con.prepareStatement(query);
             ResultSet retorno = prepareStatement.executeQuery();
 
+            //Extrayendo Ventas de la Base de datos
             while(retorno.next()){
                 VentasProductos aux = new VentasProductos();
                 aux.setId(retorno.getInt("id"));
@@ -262,6 +211,7 @@ public class BaseDatos {
                 }
                 preparedStatement2.close();
 
+                /*
                 //BUSCANDO Productos correspondientes en la BD
                 String query2 = "SELECT * FROM Productos";
                 PreparedStatement preparedStatement3 = con.prepareStatement(query2);
@@ -270,18 +220,29 @@ public class BaseDatos {
                 while (lista_Productos.next()){
                     for (int j = 0; j < indices.size(); j++) {
                         if(indices.get(j).equals(lista_Productos.getInt("id"))){
-                            Producto p = new Producto(lista_Productos.getInt("id"), lista_Productos.getString("nombre"), new BigDecimal(lista_Productos.getString("precio")));
-                            LAlistaProducto.add(p);
+                            //AGREGANDO PRODUCTO DE LA BD A LA LISTA TEMPORAL
+                            LAlistaProducto.add(new Producto(lista_Productos.getInt("id"), lista_Productos.getString("nombre"), new BigDecimal(lista_Productos.getString("precio"))));
                         }
                     }
                 }
 
                 preparedStatement3.close();
+                */
+
+                //AGREGANDO PRODUCTOS A LA LISTA TEMPORAL
+                for (int i = 0; i < indices.size(); i++) {
+                    if (servicio.getListProduct().get(i).equals(indices.get(i))){
+                        LAlistaProducto.add(servicio.getListProduct().get(i));
+                    }
+                }
+
+                //Agregando lista de producto Temporal a la Venta temporal
                 aux.setListaProductos(LAlistaProducto);
+                //Agregando Venta temporal a la lista de ventas que la función retorna
                 lista.add(aux);
                 //LIMPIEZA
-                indices.clear();
-                LAlistaProducto.clear();
+               indices.clear();
+               LAlistaProducto.clear();
             }
             prepareStatement.close();
 
