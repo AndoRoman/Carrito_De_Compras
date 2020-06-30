@@ -30,28 +30,54 @@ public class  ControladorSesion {
             ctx.sessionAttribute("contador", contador);
 
         });
+
+        app.get("/Login.html", ctx -> {
+            if(ctx.cookie("userssession") != null){
+               String user = ValidadoCookie(ctx.cookie("userssession")).getUsuario();
+               String pass = ValidadoCookie(ctx.cookie("userssession")).getPassword();
+                if(autenticacionBD(user, pass)) {
+                    ctx.sessionAttribute("usuario", user);
+                    ctx.redirect("/ListCompras.html");
+                }
+            }
+            else{
+                ctx.render("/HTML/Login.html");
+            }
+        });
+
         //autenticación de sesión
         app.post("/login", ctx -> {
            String user = ctx.formParam("usuario");
            String pass = ctx.formParam("password");
+           String boton = ctx.formParam("check");
            boolean token = false;
-           try {/*
-               do {
-                   /*
-                   if (user.matches(users.get(i).getUsuario())) {
-                       if (pass.matches(users.get(i).getPassword())) {
-                           token = true;
+           try {
 
-                       }
-                   }
-                   i++;
-
-
-               } while (token == false);*/
                System.out.println("Autenticando....");
                token = autenticacionBD(user, pass);
-           } catch (Exception e){
-                token = false;
+           } catch (Exception e) {
+               token = false;
+           }
+
+
+           //RECORDAR USUARIO
+           if(boton != null){
+               int login_HASH = hashCode();
+               //604800 seg = 1 semana
+               ctx.cookie("userssession", String.valueOf(login_HASH), 604800);
+
+               //GUARDANDO EN BD
+               try {
+                   Connection con = BaseDatos.Conexion();
+                   String query = "INSERT INTO Validacion (usuario, HASH) VALUES (?,?)";
+                   PreparedStatement preparedStatement = con.prepareStatement(query);
+                   preparedStatement.setString(1, user);
+                   preparedStatement.setInt(2, login_HASH);
+                   preparedStatement.executeUpdate();
+
+               }catch (SQLException e){
+                   Logger.getLogger(BaseDatos.class.getName()).log(Level.SEVERE, null, e);
+               }
            }
 
            if(token){
@@ -67,6 +93,48 @@ public class  ControladorSesion {
 
 
     }
+
+
+
+    private Usuario ValidadoCookie(String userssession) {
+        Usuario validation = null;
+
+        try {
+            Connection con = BaseDatos.Conexion();
+            String query = "SELECT* FROM Validacion WHERE HASH=?";
+            PreparedStatement preparedStatement = con.prepareStatement(query);
+            preparedStatement.setInt(1, Integer.valueOf(userssession));
+            ResultSet Table_user = preparedStatement.executeQuery();
+            //USUARIO
+            String user = null;
+            String nombre = null;
+            String pass = null;
+
+            while (Table_user.next()){
+                user = Table_user.getString("usuario");
+            }
+            preparedStatement.close();
+
+            String queryUsers = "SELECT * FROM Usuarios WHERE usuario=?";
+            PreparedStatement preparedStatement2 = con.prepareStatement(queryUsers);
+            preparedStatement2.setString(1, user);
+            ResultSet users = preparedStatement2.executeQuery();
+
+            while (users.next()){
+                nombre = users.getString("nombre");
+                pass = users.getString("password");
+            }
+
+            validation = new Usuario(user, nombre, pass);
+
+        }catch (SQLException e){
+            Logger.getLogger(BaseDatos.class.getName()).log(Level.SEVERE, null, e);
+        }
+
+
+        return validation;
+    }
+
 
     public boolean autenticacionBD(String user, String pass) {
         boolean result = false;

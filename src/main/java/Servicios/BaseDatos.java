@@ -3,14 +3,10 @@ import Encapsulación.Producto;
 import Encapsulación.Usuario;
 import Encapsulación.VentasProductos;
 import org.h2.tools.Server;
-import org.jetbrains.annotations.NotNull;
 import org.sql2o.Sql2o;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -85,6 +81,7 @@ public class BaseDatos {
                 "(id INT NOT NULL PRIMARY KEY,\n" +
                 "nombre VARCHAR(30) NOT NULL,\n" +
                 "precio DECIMAL(10) NOT NULL,\n" +
+                "cantidad INT NOT NULL,\n" +
                 ");";
 
 
@@ -92,7 +89,6 @@ public class BaseDatos {
                 "(id INT NOT NULL PRIMARY KEY,\n" +
                 "fechaCompra VARCHAR(30) NOT NULL,\n"+
                 "nombreCliente VARCHAR(20) NOT NULL,\n" +
-                "cantidad INT NOT NULL,\n" +
                 "FOREIGN KEY (nombreCliente) REFERENCES Usuarios(usuario),\n"+
                 ");";
         String CreateVentas_Productos = "CREATE TABLE IF NOT EXISTS Ventas_ListProductos\n" +
@@ -102,6 +98,10 @@ public class BaseDatos {
                // "FOREIGN KEY (id_Producto) REFERENCES Productos(id)" +
                 ");";
 
+        String CreateVALIDACION = "CREATE TABLE IF NOT EXISTS Validacion\n"+
+                "(usuario VARCHAR(30) NOT NULL,\n" +
+                "HASH INT NOT NULL PRIMARY KEY,\n" +
+                ")";
 
         //ESTABLECIENDO EN BASE DE DATOS
 
@@ -110,6 +110,7 @@ public class BaseDatos {
         statement.execute(CreateTABLAUSUARIOS);
         //statement.execute(CreateUSUARIOS);
         statement.execute(CreateTABLAProductos);
+        statement.execute(CreateVALIDACION);
         //statement.executeUpdate(CreateProductos);
         statement.execute(CreateVentas);
 
@@ -193,20 +194,19 @@ public class BaseDatos {
                 VentasProductos aux = new VentasProductos();
                 aux.setId(retorno.getInt("id"));
                 aux.setNombreCliente(retorno.getString("nombreCliente"));
-                aux.setCantidad(retorno.getInt("cantidad"));
                 aux.setFechaCompra(retorno.getString("fechaCompra"));
 
                 //LISTA DE PRODUCTO [SACANDO ID DE PRODUCTOS DE LA TABLA Ventas_ListProductos]
                 String sql = "SELECT id_Producto FROM Ventas_ListProductos WHERE id_Ventas=?";
                 PreparedStatement preparedStatement2 = con.prepareStatement(sql);
                 preparedStatement2.setInt(1, (int) aux.getId());
-                ResultSet indicesproduct = preparedStatement2.executeQuery();
+                ResultSet indicesproductBD = preparedStatement2.executeQuery();
                 int index;
-                ArrayList<Integer> indices = new ArrayList<Integer>();
-                while (indicesproduct.next()){
-                    index = indicesproduct.getInt("id_Producto");
+                ArrayList<Integer> indicesProductos = new ArrayList<Integer>();
+                while (indicesproductBD.next()){
+                    index = indicesproductBD.getInt("id_Producto");
                     if(index != 0){
-                        indices.add(index);
+                        indicesProductos.add(index);
                     }
                 }
                 preparedStatement2.close();
@@ -218,8 +218,8 @@ public class BaseDatos {
                 ResultSet lista_Productos = preparedStatement3.executeQuery();
 
                 while (lista_Productos.next()){
-                    for (int j = 0; j < indices.size(); j++) {
-                        if(indices.get(j).equals(lista_Productos.getInt("id"))){
+                    for (int j = 0; j < indicesProductos.size(); j++) {
+                        if(indicesProductos.get(j).equals(lista_Productos.getInt("id"))){
                             //AGREGANDO PRODUCTO DE LA BD A LA LISTA TEMPORAL
                             LAlistaProducto.add(new Producto(lista_Productos.getInt("id"), lista_Productos.getString("nombre"), new BigDecimal(lista_Productos.getString("precio"))));
                         }
@@ -230,9 +230,12 @@ public class BaseDatos {
                 */
 
                 //AGREGANDO PRODUCTOS A LA LISTA TEMPORAL
-                for (int i = 0; i < indices.size(); i++) {
-                    if (servicio.getListProduct().get(i).equals(indices.get(i))){
-                        LAlistaProducto.add(servicio.getListProduct().get(i));
+                for (int i = 0; i < indicesProductos.size(); i++) {
+                    for (int j = 0; j < servicio.getListProduct().size(); j++) {
+                        if (servicio.getListProduct().get(j).equals(indicesProductos.get(i))){
+                            LAlistaProducto.add(servicio.getListProduct().get(j));
+                            break;
+                        }
                     }
                 }
 
@@ -241,8 +244,8 @@ public class BaseDatos {
                 //Agregando Venta temporal a la lista de ventas que la función retorna
                 lista.add(aux);
                 //LIMPIEZA
-               indices.clear();
-               LAlistaProducto.clear();
+               //indicesProductos.clear();
+               //LAlistaProducto.clear();
             }
             prepareStatement.close();
 

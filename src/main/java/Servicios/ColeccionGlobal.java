@@ -34,14 +34,14 @@ public class ColeccionGlobal {
     private ColeccionGlobal(){
 
         //reñenando lista de productos por defecto en el carrito
-        indexes.add(new Producto(1, "ticket",new BigDecimal("000")));
+        indexes.add(new Producto(1, "ticket",new BigDecimal("000"), 1));
         //Añadiendo Productos
-        listProduct.add(new Producto(listProduct.size() + 1, "ticket",new BigDecimal("000")));
-        listProduct.add(new Producto(listProduct.size() + 1, "Lata de Maiz", new BigDecimal("50")));
-        listProduct.add(new Producto(listProduct.size() + 1, "Lata de Salsa", new BigDecimal("75")));
-        listProduct.add(new Producto(listProduct.size()+ 1, "Espaguetis", new BigDecimal("30")));
-        listProduct.add(new Producto(listProduct.size()+ 1, "Pollo", new BigDecimal("38")));
-        listProduct.add(new Producto(listProduct.size() + 1, "Producto de Prueba",new BigDecimal("000")));
+        listProduct.add(new Producto(listProduct.size() + 1, "ticket",new BigDecimal("000"), 1));
+        listProduct.add(new Producto(listProduct.size() + 1, "Lata de Maiz", new BigDecimal("50"), 1));
+        listProduct.add(new Producto(listProduct.size() + 1, "Lata de Salsa", new BigDecimal("75"), 1));
+        listProduct.add(new Producto(listProduct.size()+ 1, "Espaguetis", new BigDecimal("30"), 1));
+        listProduct.add(new Producto(listProduct.size()+ 1, "Pollo", new BigDecimal("38"), 1));
+        listProduct.add(new Producto(listProduct.size() + 1, "Producto de Prueba",new BigDecimal("000"), 1));
 
     }
 
@@ -56,6 +56,7 @@ public class ColeccionGlobal {
     public List<Producto> getListProduct(){
         return listProduct;
     }
+
     //REGRESA UN CARRITO DE COMPRA
     public CarroCompra getCarro(String user) {
         CarroCompra carrito = null;
@@ -66,7 +67,7 @@ public class ColeccionGlobal {
             }
         }
         if(carrito==null){
-            carrito = new CarroCompra(idcart,indexes, indexes.size(), user);
+            carrito = new CarroCompra(listCarros.size(),indexes, indexes.size(), user);
             listCarros.add(carrito);
         }
         idcart++;

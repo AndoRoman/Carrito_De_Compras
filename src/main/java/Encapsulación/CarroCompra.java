@@ -7,8 +7,6 @@ public class CarroCompra {
     private List<Producto> listaProductos;
     private int cantidad;
 
-
-
     private String user;
 
     public CarroCompra(long id, List<Producto> listaProductos, int cantidad, String user) {

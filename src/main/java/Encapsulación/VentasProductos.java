@@ -7,7 +7,6 @@ public class VentasProductos {
     private String fechaCompra;
     private String nombreCliente;
     private List<Producto> listaProductos;
-    private int cantidad;
 
     public long getId() {
         return id;
@@ -41,11 +40,4 @@ public class VentasProductos {
         this.listaProductos = listaProductos;
     }
 
-    public int getCantidad() {
-        return cantidad;
-    }
-
-    public void setCantidad(int cantidad) {
-        this.cantidad = cantidad;
-    }
 }

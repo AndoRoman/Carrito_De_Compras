@@ -41,7 +41,7 @@ public class GestorProductos {
 
     }
     public boolean agregarProduct(String producto, String precio){
-        Producto aux = new Producto(servicio.getListProduct().size() + 1, producto, new BigDecimal(precio));
+        Producto aux = new Producto(servicio.getListProduct().size() + 1, producto, new BigDecimal(precio), 1);
         servicio.getListProduct().add(aux);
 
         //Agregando a la BASE DE DATOS
@@ -50,13 +50,15 @@ public class GestorProductos {
         Connection con = null;
         try {
 
-            String query = "INSERT INTO Productos(nombre, precio) values(?,?)";
+            String query = "INSERT INTO Productos(id, nombre, precio, cantidad) values(?,?,?,?)";
             con = BaseDatos.getInstancia().Conexion();
             //
             PreparedStatement prepareStatement = con.prepareStatement(query);
             //Antes de ejecutar seteo los parametros.
-            prepareStatement.setString(1, aux.getNombre());
-            prepareStatement.setString(2, aux.getPrecio().toString());
+            prepareStatement.setInt(1, aux.getId());
+            prepareStatement.setString(2, aux.getNombre());
+            prepareStatement.setString(3, aux.getPrecio().toString());
+            prepareStatement.setInt(4, 1);
             //
             int fila = prepareStatement.executeUpdate();
             ok = fila > 0 ;

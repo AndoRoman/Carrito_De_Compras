@@ -88,7 +88,7 @@ public class ControladorCarrito {
         for (CarroCompra carroComprado: servicio.getListCarros()) {
             if (carroComprado.getUser().matches(user)){
                 i = carroComprado;
-                servicio.getListCarros().remove(carroComprado);
+                servicio.getListCarros().clear();
                 break;
             }
         }
@@ -98,7 +98,6 @@ public class ControladorCarrito {
         aux.setFechaCompra(Date.from(Instant.now()).toString());
         aux.setNombreCliente(i.getUser());
         aux.setListaProductos(i.getListaProductos());
-        aux.setCantidad(1);
 
         servicio.setVentas(aux);
 
@@ -108,14 +107,14 @@ public class ControladorCarrito {
         Connection con = null;
         try {
             //VENTA
-            String query = "INSERT INTO VentasProductos(id, fechaCompra, nombreCliente, cantidad) values(?,?,?,?)";
+            String query = "INSERT INTO VentasProductos(id, fechaCompra, nombreCliente) values(?,?,?)";
             con = BaseDatos.getInstancia().Conexion();
             //
             PreparedStatement prepareStatement = con.prepareStatement(query);
             prepareStatement.setInt(1, (int)aux.getId());
             prepareStatement.setString(2, aux.getFechaCompra());
             prepareStatement.setString(3, aux.getNombreCliente());
-            prepareStatement.setInt(4, aux.getCantidad());
+
             //
             int fila = prepareStatement.executeUpdate();
             ok = fila > 0 ;
