@@ -22,5 +22,6 @@ dependencies {
     //SQL2O
     // https://mvnrepository.com/artifact/org.sql2o/sql2o
     compile group: 'org.sql2o', name: 'sql2o', version: '1.5.4'
+    compile group: 'org.jasypt', name: 'jasypt', version: '1.9.3'
 
 }

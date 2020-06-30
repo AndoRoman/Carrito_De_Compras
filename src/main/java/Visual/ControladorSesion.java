@@ -4,7 +4,9 @@ import Encapsulación.Usuario;
 import Servicios.BaseDatos;
 import Servicios.ColeccionGlobal;
 import io.javalin.Javalin;
+import org.jasypt.util.numeric.BasicIntegerNumberEncryptor;
 
+import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -63,8 +65,14 @@ public class  ControladorSesion {
            //RECORDAR USUARIO
            if(boton != null){
                int login_HASH = hashCode();
-               //604800 seg = 1 semana
-               ctx.cookie("userssession", String.valueOf(login_HASH), 604800);
+
+               //ENCRIPTACIÓN DEL HASH de la Cookie
+               BasicIntegerNumberEncryptor numberEncryptor = new BasicIntegerNumberEncryptor();
+               numberEncryptor.setPassword("secreto");
+               BigInteger myEncryptedNumber = numberEncryptor.encrypt(new BigInteger(String.valueOf(login_HASH)));
+                System.out.println("PLANO: " + login_HASH + " ENCRIPTADO: " + myEncryptedNumber);
+               //604800 seg =  1 semana
+               ctx.cookie("userssession", myEncryptedNumber.toString(), 604800);
 
                //GUARDANDO EN BD
                try {
@@ -82,7 +90,7 @@ public class  ControladorSesion {
 
            if(token){
                //creando una cookie
-               ctx.cookie("usario", user);
+               ctx.cookie("usuario", user);
                ctx.sessionAttribute("usuario", user);
                ctx.redirect("/ListCompras.html");
 
@@ -98,12 +106,18 @@ public class  ControladorSesion {
 
     private Usuario ValidadoCookie(String userssession) {
         Usuario validation = null;
+        //DESENCRIPTANDO HASH
+        System.out.println("VALIDANDO...");
+        BasicIntegerNumberEncryptor numberEncryptor = new BasicIntegerNumberEncryptor();
+        numberEncryptor.setPassword("secreto");
+        //HASH Limpio
+        BigInteger plainLogin_hash = numberEncryptor.decrypt(new BigInteger(userssession));
 
         try {
             Connection con = BaseDatos.Conexion();
             String query = "SELECT* FROM Validacion WHERE HASH=?";
             PreparedStatement preparedStatement = con.prepareStatement(query);
-            preparedStatement.setInt(1, Integer.valueOf(userssession));
+            preparedStatement.setInt(1, plainLogin_hash.intValue());
             ResultSet Table_user = preparedStatement.executeQuery();
             //USUARIO
             String user = null;
