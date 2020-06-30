@@ -3,6 +3,7 @@ import Encapsulación.Producto;
 import Encapsulación.Usuario;
 import Encapsulación.VentasProductos;
 import org.h2.tools.Server;
+import org.jetbrains.annotations.NotNull;
 import org.sql2o.Sql2o;
 
 import java.math.BigDecimal;
@@ -19,6 +20,7 @@ public class BaseDatos {
     private Sql2o sql2o;
     private Statement statement;
     private Usuario TEST = null;
+    private Producto muestra = null;
 
     private BaseDatos(){
         try {
@@ -80,7 +82,7 @@ public class BaseDatos {
         String CreateTABLAProductos = "CREATE TABLE IF NOT EXISTS Productos\n" +
                 "(id INT NOT NULL PRIMARY KEY,\n" +
                 "nombre VARCHAR(30) NOT NULL,\n" +
-                "precio DECIMAL(10) NOT NULL,\n" +
+                "precio VARCHAR (10) NOT NULL,\n" +
                 "cantidad INT NOT NULL,\n" +
                 ");";
 
@@ -157,15 +159,37 @@ public class BaseDatos {
         } catch (SQLException ex) {
             Logger.getLogger(BaseDatos.class.getName()).log(Level.SEVERE, null, ex);
         }
-        /*
+
         //ESTABLECIENDO RELACION FORANEA EN TABLA Ventas_ListProductos
         String alter = "ALTER TABLE Ventas_ListProductos\n " +
                 "ADD FOREIGN KEY (id_Ventas) REFERENCES VentasProductos(id);";
-        //"ADD FOREIGN KEY (id_Producto) REFERENCES Productos(id);";
         PreparedStatement prepareStatement5 = con.prepareStatement(alter);
         prepareStatement5.executeUpdate();
         prepareStatement5.close();
-        */
+
+
+        //INSERTANDO PRODUCTOS POR DEFECTOS
+        String look2 = "SELECT* FROM Productos";
+        //
+        PreparedStatement security2 = con.prepareStatement(look2);
+        ResultSet toke2 = security2.executeQuery();
+
+        while (toke2.next()){
+            muestra = new Producto(toke2.getInt("id"), toke2.getString("nombre"), new BigDecimal(toke2.getString("precio")), 1);
+        }
+        if(muestra == null) {
+
+            String InsertProduct = "INSERT INTO Productos (id, nombre, precio, cantidad) VALUES (?,?,?,?)";
+            PreparedStatement preparedStatementProduct = con.prepareStatement(InsertProduct);
+            for (Producto i : servicio.getListProduct()) {
+                preparedStatementProduct.setInt(1, i.getId());
+                preparedStatementProduct.setString(2, i.getNombre());
+                preparedStatementProduct.setString(3, i.getPrecio().toString());
+                preparedStatementProduct.setInt(4, 1);
+                System.out.println("Productos Insertados: " + preparedStatementProduct.executeUpdate());
+            }
+            preparedStatementProduct.close();
+        }
        //CERRANDO
         try {
             con.close();
@@ -180,18 +204,23 @@ public class BaseDatos {
     //LA QUE SE ENCARGA DE RECONSTRUIR LA Lista de VENTAS
     public ArrayList<VentasProductos> getVentaBD(){
         ArrayList<VentasProductos> lista = new ArrayList<VentasProductos>();
-        ArrayList<Producto> LAlistaProducto = new ArrayList<Producto>();
+
         Connection con = null;
+
         try {
             String query = "SELECT* FROM VentasProductos";
-            con = BaseDatos.getInstancia().Conexion();
+            con = Conexion();
             //
             PreparedStatement prepareStatement = con.prepareStatement(query);
             ResultSet retorno = prepareStatement.executeQuery();
 
             //Extrayendo Ventas de la Base de datos
             while(retorno.next()){
+                ArrayList<Producto> LAlistaProducto = new ArrayList<Producto>();
+                int index;
+                ArrayList<Integer> indicesProductos = new ArrayList<Integer>();
                 VentasProductos aux = new VentasProductos();
+
                 aux.setId(retorno.getInt("id"));
                 aux.setNombreCliente(retorno.getString("nombreCliente"));
                 aux.setFechaCompra(retorno.getString("fechaCompra"));
@@ -201,17 +230,15 @@ public class BaseDatos {
                 PreparedStatement preparedStatement2 = con.prepareStatement(sql);
                 preparedStatement2.setInt(1, (int) aux.getId());
                 ResultSet indicesproductBD = preparedStatement2.executeQuery();
-                int index;
-                ArrayList<Integer> indicesProductos = new ArrayList<Integer>();
+
                 while (indicesproductBD.next()){
                     index = indicesproductBD.getInt("id_Producto");
                     if(index != 0){
-                        indicesProductos.add(index);
+                        indicesProductos.add(index); //id de los productos de esa venta
                     }
                 }
                 preparedStatement2.close();
 
-                /*
                 //BUSCANDO Productos correspondientes en la BD
                 String query2 = "SELECT * FROM Productos";
                 PreparedStatement preparedStatement3 = con.prepareStatement(query2);
@@ -221,14 +248,13 @@ public class BaseDatos {
                     for (int j = 0; j < indicesProductos.size(); j++) {
                         if(indicesProductos.get(j).equals(lista_Productos.getInt("id"))){
                             //AGREGANDO PRODUCTO DE LA BD A LA LISTA TEMPORAL
-                            LAlistaProducto.add(new Producto(lista_Productos.getInt("id"), lista_Productos.getString("nombre"), new BigDecimal(lista_Productos.getString("precio"))));
+                            LAlistaProducto.add(new Producto(lista_Productos.getInt("id"), lista_Productos.getString("nombre"), new BigDecimal(lista_Productos.getString("precio")), 1));
                         }
                     }
                 }
-
                 preparedStatement3.close();
-                */
 
+                /*
                 //AGREGANDO PRODUCTOS A LA LISTA TEMPORAL
                 for (int i = 0; i < indicesProductos.size(); i++) {
                     for (int j = 0; j < servicio.getListProduct().size(); j++) {
@@ -238,14 +264,11 @@ public class BaseDatos {
                         }
                     }
                 }
-
+                */
                 //Agregando lista de producto Temporal a la Venta temporal
                 aux.setListaProductos(LAlistaProducto);
                 //Agregando Venta temporal a la lista de ventas que la función retorna
                 lista.add(aux);
-                //LIMPIEZA
-               //indicesProductos.clear();
-               //LAlistaProducto.clear();
             }
             prepareStatement.close();
 
@@ -263,6 +286,23 @@ public class BaseDatos {
     }
 
 
+    public ArrayList<Producto> getProductosBD() throws SQLException {
+        ArrayList<Producto> Lista = new ArrayList<>();
+
+
+        Connection con = Conexion();
+        String look2 = "SELECT* FROM Productos";
+        //
+        PreparedStatement retorno = con.prepareStatement(look2);
+        ResultSet toke2 = retorno.executeQuery();
+
+        while (toke2.next()){
+            Producto aux = new Producto(toke2.getInt("id"), toke2.getString("nombre"), new BigDecimal(toke2.getString("precio")), 1);
+            Lista.add(aux);
+        }
+
+        return Lista;
+    }
 
 
     public static BaseDatos getInstancia() {

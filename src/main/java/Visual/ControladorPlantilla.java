@@ -38,7 +38,7 @@ public class ControladorPlantilla {
                         ctx.cookie("usuario",ctx.cookie("JSESSIONID"));
                         ctx.sessionAttribute("usuario" ,ctx.cookie("JSESSIONID"));
                     }
-                    List<Producto> listaProductos = getProductos();
+                    List<Producto> listaProductos = BaseDatos.getInstancia().getProductosBD();
                     CarroCompra aux = servicio.getCarro(ctx.sessionAttribute("usuario"));
                     String cant = String.valueOf(aux.getCantidad());
                     Map<String, Object> modelo = new HashMap<>();

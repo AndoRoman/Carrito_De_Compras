@@ -20,7 +20,7 @@ public class GestorProductos {
             String producto = ctx.formParam("NombreProducto");
             String precio = ctx.formParam("precioProducto");
             boolean toke = false;
-            for (Producto aux: servicio.getListProduct()) {
+            for (Producto aux: BaseDatos.getInstancia().getProductosBD()) {
                 if(aux.getNombre().matches(producto)) {
                     System.out.println("El Producto: " + producto + " Ha sido Modificado: " + modificarProducto(producto, precio));
                     toke=true;
@@ -41,7 +41,7 @@ public class GestorProductos {
 
     }
     public boolean agregarProduct(String producto, String precio){
-        Producto aux = new Producto(servicio.getListProduct().size() + 1, producto, new BigDecimal(precio), 1);
+        Producto aux = new Producto(producto.hashCode(), producto, new BigDecimal(precio), 1);
         servicio.getListProduct().add(aux);
 
         //Agregando a la BASE DE DATOS
@@ -84,19 +84,20 @@ public class GestorProductos {
                 index = servicio.getListProduct().indexOf(i);
             }
         }
+        servicio.getListProduct().remove(index);
         boolean ok =false;
 
         //ELIMINANDOLO DE FORMA PERSISTENTE
         Connection con = null;
         try {
 
-            String query = "DELETE FROM Productos where id = ?";
+            String query = "DELETE FROM Productos where nombre = ?";
             con = BaseDatos.getInstancia().Conexion();
             //
             PreparedStatement prepareStatement = con.prepareStatement(query);
 
             //Indica el where...
-            prepareStatement.setInt(1, index);
+            prepareStatement.setString(1, producto);
             //
             int fila = prepareStatement.executeUpdate();
             ok = fila > 0 ;
@@ -110,9 +111,10 @@ public class GestorProductos {
                 Logger.getLogger(GestorProductos.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
-        servicio.getListProduct().remove(index);
+
         return ok;
     }
+
     public boolean modificarProducto(String producto, String precio){
         int index = 0;
         for (Producto i : servicio.getListProduct()) {
@@ -128,13 +130,13 @@ public class GestorProductos {
         Connection con = null;
         try {
 
-            String query = "UPDATE Productos set precio = ? where id = ?";
+            String query = "UPDATE Productos SET precio = ? WHERE nombre = ?";
             con = BaseDatos.getInstancia().Conexion();
             //
             PreparedStatement prepareStatement = con.prepareStatement(query);
             prepareStatement.setString(1, precio);
             //Indica el where...
-            prepareStatement.setInt(2, index);
+            prepareStatement.setString(2, producto);
             //
             int fila = prepareStatement.executeUpdate();
             ok = fila > 0 ;
