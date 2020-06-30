@@ -23,16 +23,14 @@ public class  ControladorSesion {
 
     public void control(Javalin app){
 
-        app.get("/", ctx -> {
-            Integer contador = ctx.sessionAttribute("contador");
-            if(contador==null){
-                contador = 0;
-            }
-            contador++;
-            ctx.sessionAttribute("contador", contador);
-
+        app.get("/LoginOUT", ctx -> {
+            ctx.removeCookie("userssession");
+            ctx.removeCookie("usuario");
+            ctx.sessionAttribute("usuario", null);
+            ctx.redirect("/");
         });
 
+        //VERIFICANDO SESSIÓN
         app.get("/Login.html", ctx -> {
             if(ctx.cookie("userssession") != null){
                String user = ValidadoCookie(ctx.cookie("userssession")).getUsuario();

@@ -49,6 +49,7 @@ public class ControladorPlantilla {
                         if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
                             modelo.put("admin", "Lista de Compras Realizadas");
                             modelo.put("adminProduct", "Gestion de Productos");
+                            modelo.put("OUT", "Cerrar Session");
                         }
                     }catch(Exception e){
 
@@ -83,6 +84,7 @@ public class ControladorPlantilla {
                         if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
                             view.put("admin", "Lista de Compras Realizadas");
                             view.put("adminProduct", "Gestion de Productos");
+                            view.put("OUT", "Cerrar Session");
                         }
                     }catch(Exception e){
 
@@ -106,6 +108,7 @@ public class ControladorPlantilla {
                     if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
                         view.put("admin", "Lista de Compras Realizadas");
                         view.put("adminProduct", "Gestion de Productos");
+                        view.put("OUT", "Cerrar Session");
                         view.put("listaProductos", servicio.getListProduct());
                     }
                     ctx.render("/HTML/Gestor.html", view);
@@ -130,6 +133,7 @@ public class ControladorPlantilla {
                         if(ctx.sessionAttribute("usuario").toString().matches("admin")) {
                             view.put("admin", "Lista de Compras Realizadas");
                             view.put("adminProduct", "Gestion de Productos");
+                            view.put("OUT", "Cerrar Session");
                         }
                     }catch(Exception e){
                         view.put("user", "Tu Carrito de Compras");
